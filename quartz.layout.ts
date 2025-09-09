@@ -8,8 +8,7 @@ export const sharedPageComponents: SharedLayout = {
   afterBody: [],
   footer: Component.Footer({
     links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
-      "Discord Community": "https://discord.gg/cRFFHYye7t",
+      GitHub: "https://github.com/V1CeVersaa/Paper-List",
     },
   }),
 }
@@ -38,10 +37,39 @@ export const defaultContentPageLayout: PageLayout = {
         { Component: Component.ReaderMode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      folderDefaultState: "open",
+      defaultOpenDepth: 1,
+      sortFn: (a, b) => {
+        if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
+          if (!a.isFolder && !b.isFolder) {
+            const aIsNav = a.data?.title === "Navigation"
+            const bIsNav = b.data?.title === "Navigation"
+            if (aIsNav && !bIsNav) return -1
+            if (!aIsNav && bIsNav) return 1
+          }
+          return a.displayName.localeCompare(b.displayName, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          })
+        }
+
+        if (!a.isFolder && b.isFolder) {
+          return 1
+        } else {
+          return -1
+        }
+      },
+      mapFn: (node) => {
+        if (node.displayName === "Navigation") {
+          node.displayName = "🧭 Navigation"
+        }
+        return node
+      },
+    }),
   ],
   right: [
-    Component.Graph(),
+    // Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
@@ -62,7 +90,36 @@ export const defaultListPageLayout: PageLayout = {
         { Component: Component.Darkmode() },
       ],
     }),
-    Component.Explorer(),
+    Component.Explorer({
+      folderDefaultState: "open",
+      defaultOpenDepth: 1,
+      sortFn: (a, b) => {
+        if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
+          if (!a.isFolder && !b.isFolder) {
+            const aIsNav = a.data?.title === "Navigation"
+            const bIsNav = b.data?.title === "Navigation"
+            if (aIsNav && !bIsNav) return -1
+            if (!aIsNav && bIsNav) return 1
+          }
+          return a.displayName.localeCompare(b.displayName, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          })
+        }
+
+        if (!a.isFolder && b.isFolder) {
+          return 1
+        } else {
+          return -1
+        }
+      },
+      mapFn: (node) => {
+        if (node.displayName === "Navigation") {
+          node.displayName = "🧭 Navigation"
+        }
+        return node
+      },
+    }),
   ],
-  right: [],
+  right: [Component.DesktopOnly(Component.TableOfContents())],
 }

@@ -8,6 +8,7 @@ interface ParsedOptions {
   folderClickBehavior: "collapse" | "link"
   folderDefaultState: "collapsed" | "open"
   useSavedState: boolean
+  defaultOpenDepth?: number
   sortFn: (a: FileTrieNode, b: FileTrieNode) => number
   filterFn: (node: FileTrieNode) => boolean
   mapFn: (node: FileTrieNode) => void
@@ -126,13 +127,20 @@ function createFolderNode(
   }
 
   // if the saved state is collapsed or the default state is collapsed
+  const savedState = currentExplorerState.find((item) => item.path === folderPath)?.collapsed
+
+  // compute depth starting from root (/)=0, top-level folders=1, etc.
+  const simpleFolderPath = simplifySlug(folderPath)
+  const depth = simpleFolderPath === "/" ? 0 : simpleFolderPath.split("/").filter(Boolean).length
+
   const isCollapsed =
-    currentExplorerState.find((item) => item.path === folderPath)?.collapsed ??
-    opts.folderDefaultState === "collapsed"
+    // 若提供了 defaultOpenDepth，则优先用深度规则；否则按保存状态或默认折叠逻辑
+    opts.defaultOpenDepth !== undefined
+      ? depth > opts.defaultOpenDepth
+      : savedState ?? opts.folderDefaultState === "collapsed"
 
   // if this folder is a prefix of the current path we
   // want to open it anyways
-  const simpleFolderPath = simplifySlug(folderPath)
   const folderIsPrefixOfCurrentSlug =
     simpleFolderPath === currentSlug.slice(0, simpleFolderPath.length)
 
@@ -159,6 +167,10 @@ async function setupExplorer(currentSlug: FullSlug) {
       folderClickBehavior: (explorer.dataset.behavior || "collapse") as "collapse" | "link",
       folderDefaultState: (explorer.dataset.collapsed || "collapsed") as "collapsed" | "open",
       useSavedState: explorer.dataset.savestate === "true",
+      defaultOpenDepth:
+        explorer.dataset.opendepth !== undefined && explorer.dataset.opendepth !== ""
+          ? Number(explorer.dataset.opendepth)
+          : undefined,
       order: dataFns.order || ["filter", "map", "sort"],
       sortFn: new Function("return " + (dataFns.sortFn || "undefined"))(),
       filterFn: new Function("return " + (dataFns.filterFn || "undefined"))(),
@@ -167,7 +179,11 @@ async function setupExplorer(currentSlug: FullSlug) {
 
     // Get folder state from local storage
     const storageTree = localStorage.getItem("fileTree")
-    const serializedExplorerState = storageTree && opts.useSavedState ? JSON.parse(storageTree) : []
+    // 当指定了 defaultOpenDepth 时，忽略历史保存的展开/折叠状态，使用深度规则作为默认
+    const serializedExplorerState =
+      storageTree && opts.useSavedState && opts.defaultOpenDepth === undefined
+        ? JSON.parse(storageTree)
+        : []
     const oldIndex = new Map<string, boolean>(
       serializedExplorerState.map((entry: FolderState) => [entry.path, entry.collapsed]),
     )
@@ -193,14 +209,14 @@ async function setupExplorer(currentSlug: FullSlug) {
 
     // Get folder paths for state management
     const folderPaths = trie.getFolderPaths()
-    currentExplorerState = folderPaths.map((path) => {
+    // 仅保留“确实有已保存状态”的文件夹，其他文件夹在首次渲染时交由 defaultOpenDepth 规则决定
+    currentExplorerState = folderPaths.reduce<Array<FolderState>>((acc, path) => {
       const previousState = oldIndex.get(path)
-      return {
-        path,
-        collapsed:
-          previousState === undefined ? opts.folderDefaultState === "collapsed" : previousState,
+      if (previousState !== undefined) {
+        acc.push({ path, collapsed: previousState })
       }
-    })
+      return acc
+    }, [])
 
     const explorerUl = explorer.querySelector(".explorer-ul")
     if (!explorerUl) continue
