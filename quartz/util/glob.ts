@@ -10,12 +10,13 @@ export async function glob(
   pattern: string,
   cwd: string,
   ignorePatterns: string[],
+  opts?: { gitignore?: boolean },
 ): Promise<FilePath[]> {
   const fps = (
     await globby(pattern, {
       cwd,
       ignore: ignorePatterns,
-      gitignore: true,
+      gitignore: opts?.gitignore ?? true,
     })
   ).map(toPosixPath)
   return fps as FilePath[]

@@ -21,6 +21,7 @@ export type FontSpecification =
       name: string
       weights?: number[]
       includeItalic?: boolean
+      fallbacks?: string | string[]
     }
 
 export interface Theme {
@@ -47,6 +48,51 @@ export function getFontSpecificationName(spec: FontSpecification): string {
   }
 
   return spec.name
+}
+
+
+const CSS_QUOTED_NAME_REGEX = /^(['"]).+\1$/
+
+function normalizeFontFallbacks(spec: FontSpecification): string[] {
+  if (typeof spec === "string") {
+    return []
+  }
+
+  if (!spec.fallbacks) {
+    return []
+  }
+
+  const fallbacks = Array.isArray(spec.fallbacks) ? spec.fallbacks : [spec.fallbacks]
+  return fallbacks.map((name) => name.trim()).filter((name) => name.length > 0)
+}
+
+function quoteFontName(name: string): string {
+  const trimmed = name.trim()
+
+  if (trimmed.length === 0) {
+    return trimmed
+  }
+
+  if (CSS_QUOTED_NAME_REGEX.test(trimmed)) {
+    return trimmed
+  }
+
+  const escaped = trimmed.replace(/"/g, '\"')
+  return `"${escaped}"`
+}
+
+function buildFontFamily(spec: FontSpecification, defaultStack: string): string {
+  const primaryName = getFontSpecificationName(spec).trim()
+  const candidates = [...normalizeFontFallbacks(spec), primaryName]
+  const uniqueCandidates = candidates.filter(
+    (name, index) => name.length > 0 && candidates.indexOf(name) === index,
+  )
+  const fontList =
+    uniqueCandidates.length > 0
+      ? uniqueCandidates.map((name) => quoteFontName(name))
+      : [quoteFontName(primaryName)]
+
+  return `${fontList.join(", ")}, ${defaultStack}`
 }
 
 function formatFontSpecification(
@@ -155,10 +201,10 @@ ${stylesheet.join("\n\n")}
   --highlight: ${theme.colors.lightMode.highlight};
   --textHighlight: ${theme.colors.lightMode.textHighlight};
 
-  --titleFont: "${getFontSpecificationName(theme.typography.title || theme.typography.header)}", ${DEFAULT_SANS_SERIF};
-  --headerFont: "${getFontSpecificationName(theme.typography.header)}", ${DEFAULT_SANS_SERIF};
-  --bodyFont: "${getFontSpecificationName(theme.typography.body)}", ${DEFAULT_SANS_SERIF};
-  --codeFont: "${getFontSpecificationName(theme.typography.code)}", ${DEFAULT_MONO};
+  --titleFont: ${buildFontFamily(theme.typography.title || theme.typography.header, DEFAULT_SANS_SERIF)};
+  --headerFont: ${buildFontFamily(theme.typography.header, DEFAULT_SANS_SERIF)};
+  --bodyFont: ${buildFontFamily(theme.typography.body, DEFAULT_SANS_SERIF)};
+  --codeFont: ${buildFontFamily(theme.typography.code, DEFAULT_MONO)};
 }
 
 :root[saved-theme="dark"] {

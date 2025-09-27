@@ -23,8 +23,18 @@ const config: QuartzConfig = {
       fontOrigin: "googleFonts",
       cdnCaching: true,
       typography: {
-        header: "Noto Serif SC",
-        body: "Noto Serif SC",
+        header: {
+          name: "Noto Serif SC",
+          weights: [400, 700],
+          includeItalic: true,
+          fallbacks: ["Palatino"],
+        },
+        body: {
+          name: "Noto Serif SC",
+          weights: [400, 700],
+          includeItalic: true,
+          fallbacks: ["Palatino"],
+        },
         code: "IBM Plex Mono",
       },
       colors: {
@@ -69,7 +79,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "relative" }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],

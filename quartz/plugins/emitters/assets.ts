@@ -8,7 +8,10 @@ import { QuartzConfig } from "../../cfg"
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig) => {
   // glob all non MD files in content folder and copy it over
-  return await glob("**", argv.directory, ["**/*.md", ...cfg.configuration.ignorePatterns])
+  // Do NOT respect .gitignore so that content assets (e.g., PDFs) are always copied
+  return await glob("**", argv.directory, ["**/*.md", ...cfg.configuration.ignorePatterns], {
+    gitignore: false,
+  })
 }
 
 const copyFile = async (argv: Argv, fp: FilePath) => {
