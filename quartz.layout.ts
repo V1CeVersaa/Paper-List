@@ -61,9 +61,6 @@ export const defaultContentPageLayout: PageLayout = {
         }
       },
       mapFn: (node) => {
-        if (node.displayName === "Navigation") {
-          node.displayName = "🧭 Navigation"
-        }
         return node
       },
     }),

@@ -1,14 +1,14 @@
 ---
 title: PG-Guide
+headline: The Definitive Guide to Policy Gradients
 ---
-
-# The Definitive Guide to Policy Gradients
 
 > [!abstract]
 > 
 > 这篇综述的目标是全面概述 **On-Policy 的策略梯度算法**：
 > - [第二节](#2-preliminaries) 概述了深度强化学习需要的 **符号表示**、**强化学习基础知识** 以及必要的 **深度学习基础知识**。虽然这部分内容基本上大多数人都熟悉了，但是我正好借着这篇综述总结一下。
 > - [第三节](#3-theoretical-foundations-of-pg) 介绍了策略梯度算法的理论基础，包括 **Policy Gradient Theorem** 连续版本的详细证明、使用 Baseline 以及优势函数来降低方差的技术。
+> - [第四节](#4-policy-gradient-algorithms) 介绍了当前最流行最重要的策略梯度算法，包括 REINFORCE、A2C、TRPO、PPO 以及 V-MPO，这些算法可以看作一步一步更新迭代得到的，使用不同的技术提升学习的稳定性和效率，这里面我们需要学到的技术包括构造可采样的替代目标、正则化策略更新以及具体优化的细节等等。
 
 ## 1. Introduction
 
@@ -452,11 +452,182 @@ $$
 
 ## 4. Policy Gradient Algorithms
 
+基于策略梯度定理，已经提出了很多策略梯度算法，其计算基于样本的梯度估计 $\hat{\nabla}_\theta J(\theta)$。这些算法通过构造不同的替代目标 $J_*$ 来实现的，这些替代目标均满足 $\nabla_\theta J_*(\theta) = \hat{\nabla}_\theta J(\theta)$。除此之外，很多算法还关注对策略进行正则化，以及降低梯度估计 $\hat{\nabla}_\theta J(\theta)$ 的方差来稳定学习，这一节，我们将推导最重要的几种策略梯度算法，并且在章节的最后对这些算法的设计选择进行比较。
+
 ### 4.1 REINFORCE
+
+[REINFORCE](https://link.springer.com/article/10.1007/BF00992696) 算法是最早的策略梯度算法，其名字来自于 REward Increment = Non-negative Factor × Offset Reinforcement × Characteristic Eligibility 的缩写。虽然该算法早于策略梯度定理的提出，但是可以看作是策略梯度定理的直接应用，其方法是使用 Monte Carlo 方法来估计公式 (6)，采样整个 episode 来计算样本回报 $G_t = \sum_{k=0}^{T} \gamma^k r_{t+k+1}$，REINFORCE 采样策略梯度
+$$
+\hat{\nabla}_\theta J(\theta) = G_t \nabla_\theta \ln \pi_\theta (a_t \mid s_t).
+$$
+
+然后使用一般的策略梯度更新来进行梯度上升：
+$$
+\theta_{\text{new}} = \theta + \alpha G_t \nabla_\theta \ln \pi_\theta (a_t \mid s_t)
+$$
+
+这里面 $\alpha \in (0, 1]$ 是学习率，决定了梯度步长的大小，并被设置为一个超参数。有时，REINFORCE 会通过从 $G_t$ 中减去一个 Baseline 来降低方差。
+
+![](./assets/PG-Guide-5.png)
 
 ### 4.2 A3C
 
+REINFORCE 算法仍然还是早期的深度强化学习算法，直接使用采样数据估计 $Q_\pi$，我们可以选择通过函数逼近来学习这样的估计。我们将动作价值函数 $\hat{Q}_\phi$ 或者价值函数 $\hat{V}_\phi$ 的参数化估计称为 Critic，而将参数化策略 $\pi_\theta$ 称为 Actor，使用这种方法来学习 Actor 和 Critic 的算法被称为 Actor-Critic 算法。这里面 Actor 和 Critic 可以共享参数。
+
+Actor-Critic 算法里面最典型的代表是 [**Asynchronous Advantage Actor-Critic/A3C**](https://arxiv.org/abs/1602.01783) 算法。算法的名称表明了该算法的两个主要特点，首先，A3C 使用优势函数 $\hat{A}_\phi$ 的估计来替代 $Q_\pi$ 的估计来计算策略梯度，其次，A3C 使用多个并行的 Actor 来与环境交互以稳定训练。我们将在下面详细讨论这两个想法。
+
+具体而言，A3C 算法采样策略梯度
+$$
+\hat{\nabla}_\theta J(\theta) = \frac{1}{\lvert \mathcal{D}\rvert} \sum_{s, a \in \mathcal{D}} \hat{A}_\phi(s, a) \nabla_\theta \ln \pi_\theta (a \mid s)
+$$
+
+这里面 $\mathcal{D}$ 是由多个 Actor 收集的一批转移。伪代码如下，我们会具体讨论这个算法。
+
+![](./assets/PG-Guide-6.png)
+
+在最初的工作中，优势函数 $\hat{A}_\phi$ 通过以下方式估计：
+$$
+\hat{A}_\phi(s_t, a_t) = \left( \sum_{i=0}^{k-1} \gamma^i r_{t+i} + \gamma^k \hat{V}_\phi(s_{t+k}) \right) - \hat{V}_\phi(s_t). 
+$$
+
+这个估计其实也是使用了频率学派思想的一个例子，使用 $n$ 步时序差分来估计动作价值函数 $Q_\pi$：
+$$
+\begin{aligned}
+A_\pi (s_t, a_t) &= Q_\pi (s_t, a_t) - V_\pi (s_t) \\
+&= \mathbb{E}_\pi[R_{t+1} + \gamma V_\pi (S_{t+1}) | S_t = s_t, A_t = a_t] - V_\pi (s_t) \\
+&= \mathbb{E}_\pi[R_{t+1} + \gamma R_{t+2} + \gamma^2 V_\pi (S_{t+2}) | S_t = s_t, A_t = a_t] - V_\pi (s_t) \\
+&\quad \vdots \\
+&= \mathbb{E}_\pi\left[\sum_{i=0}^{k-1}\gamma^i R_{t+i} + \gamma^k V_\pi (S_{t+k}) | S_t = s_t, A_t = a_t\right] - V_\pi (s_t),
+\end{aligned}
+$$
+
+使用估计的 $\hat{V}_\phi$ 替代 $V_\pi$，并对上面的表达式进行采样，我们对优势函数的估计。在更新 Actor $\pi_\theta$ 的同时，我们通过最小化均方误差损失来学习 $\hat{V}_\phi$，更新 $\phi$ 的过程可以使用随机梯度下降：
+$$
+\frac{1}{\lvert \mathcal{D}\rvert} \sum_{\mathcal{D}} \left( \left(\sum_{i=0}^{k-1} \gamma^i r_{t+i} + \gamma^k \hat{V}_\phi(s_{t+k})\right) - \hat{V}_\phi(s_t) \right)^2
+$$
+
+注意到这个表达式内部的元素正好和优势函数的估计相同，对于优势函数，我们计算的是状态 $s_t$ 下选择动作 $a_t$ 的估计回报与在策略 $\pi$ 下状态 $s_t$ 的估计回报之间的差异。然而，$a_t$ 是从 $\pi$ 中采样的，因此对于真实价值函数 $V_\pi$，期望上这个差异应该为 0。**所以**，我们就可以使用最小二乘法最小化这个平方差来优化 $\phi$，更进一步，我们使用 semi-gradient 方法来优化 $\phi$，将第一项 $\sum_{i=0}^{k-1} \gamma^i r_{t+i} + \gamma^k \hat{V}_\phi(s_{t+k})$ 视为与 $\phi$ 无关，这样的 semi-gradient 可以提升学习的稳定性。
+
+至于为什么使用多个并行的 Actor 来与环境交互，我们有以下原因。深度强化学习以不稳定著称，为了解决学习的不稳定性，使用 Off-Policy 算法的一个解决方式是使用 **经验回放缓冲区/Replay Buffer** 来存储复用采样到的转移，这可以提升样本效率并且降低方差。对于 On-Policy 的方法，我们使用多个 Actor $(\pi_\theta^{(1)}, \ldots, \pi_\theta^{(k)})$ 来在多个轨迹上积累梯度来降低噪声，这些积累的梯度被应用到一个集中维护的参数拷贝 $\theta$ 上，对这个 $\theta$ 进行更新参数，然后再把更新后的参数分发回各个 Actor。以异步方式这么做时，每个 Actor 在任意时刻都可能与其他 Actor 拥有不同的一组参数，这会降低跨 Actor 采样轨迹之间的相关性，进一步稳定学习。
+
+最后，A3C 的策略损失通常会加入一个熵奖励/熵正则，防止策略过早地收敛到次优策略
+$$
+\hat{\nabla}_\theta J(\theta) = \frac{1}{\lvert \mathcal{D}\rvert} \sum_{\mathcal{D}} \left( \left(\sum_{i=0}^{k-1} \gamma^i r_{t+i} + \gamma^k \hat{V}_\phi(s_{t+k}) - \hat{V}_\phi(s_t)\right) \nabla_\theta \ln \pi_\theta (a_t \mid s_t) + \beta \nabla_\theta H(\pi_\theta(\cdot \mid s_t)) \right),
+$$
+
+这里的 $\beta$ 是一个超参数。通过奖励更高的熵，策略会在各个动作上更均匀地分配概率质量，从而改进探索。
+
 ### 4.3 TRPO
+
+在强化学习算法的设计中，一个重要的考虑因素是策略更新的步长。过大的策略变化会引起训练的不稳定，即使是策略参数 $\theta$ 的小幅变化，也可能导致学习到的策略及其性能出现显著改变。因此，简单通过缩小梯度上升的步长并不能彻底解决该问题，且还会降低算法的样本效率。[**Trust Region Policy Optimization/TRPO**](https://arxiv.org/abs/1502.05477) 通过在相邻策略之间施加 KL 散度的信赖域约束来缓解这些问题，并且使用 Importance Sampling 处理优化与数据采集交替进行带来的轻微 Off-Policy 偏离。
+
+具体而言，TRPO 采样的策略梯度为
+$$
+\hat{\nabla}_\theta J(\theta) = \frac{1}{\lvert \mathcal{D}\rvert} \sum_{s, a \in \mathcal{D}} \hat{A}_\phi(s, a) \nabla_\theta \frac{\pi_\theta(a \mid s)}{\pi_{\text{old}}(a \mid s)}.
+$$
+
+随后会按照如下方式解决这个近似信赖域优化问题：
+$$
+\begin{aligned}
+\max_\theta & \quad \Big( J_{\text{TRPO}}(\theta) = \mathbb{E}_{S \sim d^{\pi_{\text{old}}}, A \sim \pi_{\text{old}}} \left[ \hat{A}_\phi(S, A) \frac{\pi_\theta(A \mid S)}{\pi_{\text{old}}(A \mid S)} \right] \Big) \\
+\text{subject to} & \quad \mathbb{E}_{S \sim d^{\pi_{\text{old}}}} \left[ D_{KL}(\pi_{\text{old}}(\cdot \mid S) \| \pi_\theta(\cdot \mid S)) \right] \leq \delta.
+\end{aligned}
+$$
+
+这里面 $\pi_{\text{old}} = \pi_{\theta_{\text{old}}}$ 表示上一个策略，$\theta_{\text{old}}$ 为其参数。这个优化问题是具有收敛性保证的，我们将一步一步分析。
+
+我们首先考虑 TRPO 这篇文章的主要理论结果：令 $\eta(\tilde{\pi})$ 为在策略 $\tilde{\pi}$ 下的期望回报 $\mathbb{E}_{S_0 \sim p_0, \tilde{\pi}}[G_0]$，那么 $\eta(\tilde{\pi})$ 可以通过另一个策略 $\pi$ 和其优势函数来求解：
+$$
+\eta(\tilde{\pi}) = \eta(\pi) + \mathbb{E}_{\tau \sim \tilde{\pi}} \left[ \sum_{t=0}^{\infty} \gamma^t A_{\pi}(s_t, a_t) \right] = \eta(\pi) + \int_{s \in \mathcal{S}} d^{\tilde{\pi}}(s) \int_{a \in \mathcal{A}} \tilde{\pi}(a \mid s) A_{\pi}(s, a) \mathrm{d}a \mathrm{d}s.
+$$
+
+假设 $\tilde{\pi}$ 的状态访问密度和 $\pi$ 的状态访问密度相同，那么我们可以得到 $\eta(\tilde{\pi})$ 的局部一阶近似：
+$$
+\begin{aligned}
+L_\pi(\tilde{\pi}) = \eta(\pi) &+ \int_{s \in \mathcal{S}} d^{\pi}(s) \int_{a \in \mathcal{A}} \tilde{\pi}(a \mid s) A_{\pi}(s, a) \mathrm{d}a \mathrm{d}s \\
+L_{\pi_\theta}(\pi_\theta) &= \eta(\pi_\theta) \\
+\left.\nabla_\theta L_{\pi_{\theta_0}}(\pi_\theta)\right|_{\theta = \theta_0} &= \left.\nabla_\theta \eta(\pi_\theta)\right|_{\theta = \theta_0}.
+\end{aligned}
+$$
+
+定义 $D^{\max}_{TV}(\pi, \tilde{\pi}) = \max_{s \in \mathcal{S}} D_{TV}(\pi(\cdot \mid s) \| \tilde{\pi}(\cdot \mid s))$，则有
+
+> [!theorem] Policy Optimization
+>
+> 令 $\alpha = D^{\max}_{TV}(\pi_{\text{old}}, \pi_{\text{new}})$，$\varepsilon = \max_{s \in \mathcal{S}, a \in \mathcal{A}} \lvert A_{\pi}(s, a) \rvert$，则
+> $$
+> \eta(\pi_{\text{new}}) \geq L_{\pi_{\text{old}}}(\pi_{\text{new}}) - \frac{4 \varepsilon \gamma}{(1 - \gamma)^2} \alpha^2.
+> $$
+
+利用全变分散度和 KL 散度的关系：$D_{TV}(\pi \|\tilde{\pi})^2 \le D_{KL}(\pi \|\tilde{\pi})$，令 $D^{\max}_{KL}(\pi, \tilde{\pi}) = \max_{s \in \mathcal{S}} D_{KL}(\pi(\cdot \mid s) \| \tilde{\pi}(\cdot \mid s))$，以及 $C = 4 \varepsilon \gamma / (1 - \gamma)^2$，我们可以将上述不等式使用 KL 散度来重写为：
+$$
+\eta(\pi_{\text{new}}) \geq L_{\pi_{\text{old}}}(\pi_{\text{new}}) - C D^{\max}_{KL}(\pi_{\text{old}}, \pi_{\text{new}}).
+$$
+
+这个不等式当且仅当 $\pi_{\text{new}} = \pi_{\text{old}}$ 时取等号。
+
+这就出现了一件非常神奇的事情，迭代地优化不等式的右侧，我们可以得到一个策略序列 $\pi_i, \pi_{i+1}, \pi_{i+2}, \ldots$，并且这个序列的性能是单调改进的。具体而言，这是因为：
+$$
+\eta(\pi_{i+1}) - \eta(\pi_i) \geq \big( L_{\pi_i}(\pi_{i+1}) - C D^{\max}_{KL}(\pi_i, \pi_{i+1}) \big) - \big( L_{\pi_i}(\pi_i) - C D^{\max}_{KL}(\pi_i, \pi_i) \big).
+$$
+
+在对不等式右侧最大化的时候，这显然是对的。因此我们就可以构造一个 Minorization-Maximization 型算法，每次最大化不等式右侧的目标，并且由于这个目标是有界的，因此这个算法会收敛到一个局部最优。这个算法在理论上可行，但是并不实用，因为其需要对整个动作价值的乘积空间 $\mathcal{S} \times \mathcal{A}$ 上评估优势函数，并且需要对状态空间 $\mathcal{S}$ 上计算 KL 散度罚项。考虑 KL 散度罚项的含义，我们将其视为对策略更新的一个正则化项，防止策略更新过大，因此我们可以将其替换成一个信赖域约束：
+$$
+\begin{aligned}
+\max_\theta & \quad L_{\pi_{\text{old}}}(\pi_\theta) \\
+\text{subject to} & \quad D^{\max}_{KL}(\pi_{\text{old}}, \pi_\theta) \leq \delta.
+\end{aligned}
+$$
+
+为了避免计算 $D^{\max}_{KL}$，TRPO 做了以下修改：可以将最大散度约束替换成期望散度约束作为我们可以采样的启发式约束：
+$$
+\bar{D}^{\pi_{\text{old}}}_{KL}(\pi \| \tilde{\pi}) := \mathbb{E}_{S \sim d_{\pi_{\text{old}}}} \left[ D_{KL}(\pi(\cdot \mid S) \| \tilde{\pi}(\cdot \mid S)) \right].
+$$
+
+进一步，我们可以使用重要性采样重写目标函数 $\max_\theta L_{\pi_{\text{old}}}(\pi_\theta)$：
+$$
+\begin{aligned}
+\operatorname*{\arg\max}_\theta L_{\pi_{\text{old}}}(\pi_\theta) &= \operatorname*{\arg\max}_\theta \left( \eta(\pi_{\text{old}}) + \int_{s \in \mathcal{S}} d^{\pi_{\text{old}}}(s) \int_{a \in \mathcal{A}} \pi_\theta(a \mid s) A_{\pi_{\text{old}}}(s, a) \mathrm{d}a \mathrm{d}s \right) \\
+&= \operatorname*{\arg\max}_\theta \int_{s \in \mathcal{S}} d^{\pi_{\text{old}}}(s) \int_{a \in \mathcal{A}} \pi_\theta(a \mid s) A_{\pi_{\text{old}}}(s, a) \mathrm{d}a \mathrm{d}s \\
+&= \operatorname*{\arg\max}_\theta \int_{s \in \mathcal{S}} d^{\pi_{\text{old}}}(s) \int_{a \in \mathcal{A}} \pi_{\text{old}}(a \mid s) \frac{\pi_\theta(a \mid s)}{\pi_{\text{old}}(a \mid s)} A_{\pi_{\text{old}}}(s, a) \mathrm{d}a \mathrm{d}s \\
+&= \operatorname*{\arg\max}_\theta \mathbb{E}_{S \sim d^{\pi_{\text{old}}}, A \sim \pi_{\text{old}}} \left[ \frac{\pi_\theta(A \mid S)}{\pi_{\text{old}}(A \mid S)} A_{\pi_{\text{old}}}(S, A) \right].
+\end{aligned}
+$$
+
+这就是本节开头给出的 TRPO 的优化目标。
+
+为了解决这个约束优化问题，TRPO 原文使用回溯线搜索，搜索方向通过对目标函数和约束条件进行泰勒展开来计算。令 $g = \nabla_\theta \mathbb{E}_{S \sim d^{\pi_{\text{old}}}, A \sim \pi_{\text{old}}} \left[ \frac{\pi_\theta(A \mid S)}{\pi_{\text{old}}(A \mid S)} A_{\pi_{\text{old}}}(S, A) \right]$。在 $\theta_{\text{old}}$ 附近一阶近似展开 $L_{\pi_{\text{old}}}(\pi_\theta)$ 得到
+$$
+L_{\pi_{\text{old}}}(\pi_\theta) \approx g^\top (\theta - \theta_{\text{old}})
+$$
+
+这里忽略了常数 $\eta(\pi_{\text{old}})$。在 $\theta_{\text{old}}$ 处二阶近似展开约束
+$$
+\bar{D}^{\pi_{\text{old}}}_{KL}(\pi \| \tilde{\pi}) \approx \frac{1}{2} (\theta - \theta_{\text{old}})^\top H (\theta - \theta_{\text{old}})
+$$
+
+这里面 $H$ 是 Fisher 信息矩阵，可以通过
+$$
+\hat{H}_{i, j} = \frac{1}{\lvert \mathcal{D}\rvert} \sum_{s \in \mathcal{D}} \frac{\partial^2}{\partial \theta_i \partial \theta_j} D_{KL}(\pi_{\text{old}}(\cdot \mid s) \| \pi(\cdot \mid s))
+$$
+
+来估计，这里不需要全部的矩阵。使用拉格朗日对偶性，我们可以解析地得到近似解
+$$
+\theta_{\text{new}} = \theta_{\text{old}} + \sqrt{\frac{2 \delta}{g^\top \hat{H}^{-1} g}} \hat{H}^{-1} g.
+$$
+
+但是由于使用了 Taylor 近似，上述解可能不满足原信赖域约束，或者可能无法改进替代目标，因此 TRPO 使用回溯线搜索，沿着方向 $H^{-1} g$ 搜索参数 $\beta \in (0, 1)$：
+$$
+\theta_{\text{new}} = \theta_{\text{old}} + \beta^{m} \sqrt{\frac{2 \delta}{g^\top H^{-1} g}} H^{-1} g.
+$$
+
+这里指数 $m$ 是使得信赖域约束被满足且替代目标得到改进的最小非负整数。我们可以使用共轭梯度算法来计算 $d$，这样就可以避免显式地计算 $H$ 矩阵的逆。为了进一步降低计算成本，这个过程中 Fisher 向量积也可以只在数据集 $\mathcal{D}$ 的子集上计算。
+
+TRPO 原论文并没有指定使用何种方式对优势函数进行估计，算法要么使用 A3C 的估计，要么使用 PPO 中给出的估计。TRPO 通常和 A3C 一样，使用多个并行的 Actor。
+
+TRPO 的伪代码如下：
+
+![](./assets/PG-Guide-7.png)
 
 ### 4.4 PPO
 

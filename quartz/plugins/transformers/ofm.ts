@@ -547,6 +547,25 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
         })
       }
 
+      // Support standard markdown image resizing ![alt|100](src)
+      plugins.push(() => {
+        return (tree: Root, _file) => {
+          visit(tree, "image", (node) => {
+            const alt = node.alt || ""
+            const match = wikilinkImageEmbedRegex.exec(alt)
+            if (match?.groups?.width) {
+              node.alt = match.groups.alt || ""
+              node.data = {
+                hProperties: {
+                  width: match.groups.width,
+                  height: match.groups.height,
+                },
+              }
+            }
+          })
+        }
+      })
+
       return plugins
     },
     htmlPlugins() {

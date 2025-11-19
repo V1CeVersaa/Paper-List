@@ -29,6 +29,7 @@ title: Navigation
 **Papers**: 
 
 - [ ] NIPS 1999: Policy Gradient Methods for Reinforcement Learning with Function Approximation, [NIPS](https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html), [Note]()
+- [ ] ICML 2002, **CPI / Kakade & Langford**: Approximately Optimal Approximate Reinforcement Learning, [PDF](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/KakadeLangford-icml2002.pdf), [Note]()
 - [ ] NIPS 2001, **NPG**: A Natural Policy Gradient, [NIPS](https://papers.nips.cc/paper_files/paper/2001/hash/4b86abe48d358ecf194c56c69108433e-Abstract.html), [Note]()
 - [ ] ICML 2016, **A3C**: Asynchronous Methods for Deep Reinforcement Learning, [arXiv](https://arxiv.org/abs/1602.01783), [Note]()
 - [ ] ICML 2015, **TRPO**: Trust Region Policy Optimization, [arXiv](https://arxiv.org/abs/1502.05477), [Note]()
@@ -60,9 +61,14 @@ title: Navigation
 **Papers**:
 
 - [ ] AISTATS 2011, **DAgger**: A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning, [arXiv](https://arxiv.org/abs/1011.0686), [Note](./IL-DAgger.md)
+- [x] ICML 2022: Imitation Learning by Estimating Expertise of Demonstrators, [arXiv](https://arxiv.org/abs/2202.01288), [Note](./IL-ILEED.md)
+
 - [ ] NIPS 2016, **GAIL**: Generative Adversarial Imitation Learning, [arXiv](https://arxiv.org/abs/1606.03476), [Note](./IL-GAIL.md)
 - [ ] NIPS 2017, **InfoGAIL**: Interpretable Imitation Learning from Visual Demonstrations, [arXiv](https://arxiv.org/abs/1703.08840), [Note](./IL-InfoGAIL.md)
+- [ ] IJCAI 2020, **Triple-GAIL**: Triple-GAIL: A Multi-Modal Imitation Learning Framework, [arXiv](https://arxiv.org/abs/2005.10622), [Note]()
+- [ ] IJCAI 2021, **SAIL**: Robust Adversarial Imitation Learning via Adaptively-Selected Demonstrations, [IJCAI](https://www.ijcai.org/proceedings/2021/434), [Note]()
 - [ ] ICLR 2023, **HOIL**: Seeing Differently, Acting Similarly: Heterogeneously Observable Imitation Learning, [arXiv](https://arxiv.org/abs/2106.09256), [Note]()
+- [ ] ICML 2023, **PCIL**: Policy Contrastive Imitation Learning, [arXiv](https://arxiv.org/abs/2307.02829), [Note]()
 
 ## Inverse Reinforcement Learning
 
@@ -72,7 +78,7 @@ title: Navigation
 
 **Papers**:
 
-- [ ] AAAI 2008, **MaxEnt IRL**: Maximum Entropy Inverse Reinforcement Learning, [AAAI](https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf), [Note]()
+- [ ] AAAI 2008, **MaxEnt IRL**: Maximum Entropy Inverse Reinforcement Learning, [AAAI](https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf), [Note](./IRL-MaxEnt.md)
 - [ ] ICML 2016, **MaxEnt IOC**: Guided Cost Learning: Deep Inverse Optimal Control via Policy Optimization, [arXiv](https://arxiv.org/abs/1603.00448), [Note]()
 - [ ] ICLR 2018, **AIRL**: Learning Robust Rewards with Adverserial Inverse Reinforcement Learning, [arXiv](https://arxiv.org/abs/1710.11248), [Note]()
 
