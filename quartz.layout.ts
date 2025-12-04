@@ -39,7 +39,7 @@ export const defaultContentPageLayout: PageLayout = {
     }),
     Component.Explorer({
       folderDefaultState: "open",
-      defaultOpenDepth: 1,
+      defaultOpenDepth: 0,
       sortFn: (a, b) => {
         if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
           if (!a.isFolder && !b.isFolder) {
@@ -98,6 +98,14 @@ export const defaultListPageLayout: PageLayout = {
             if (aIsNav && !bIsNav) return -1
             if (!aIsNav && bIsNav) return 1
           }
+
+          if (!a.isFolder && !b.isFolder) {
+            const aIsOverview = a.data?.title === "Overview"
+            const bIsOverview = b.data?.title === "Overview"
+            if (aIsOverview && !bIsOverview) return -1
+            if (!aIsOverview && bIsOverview) return 1
+          }
+
           return a.displayName.localeCompare(b.displayName, undefined, {
             numeric: true,
             sensitivity: "base",
@@ -111,9 +119,9 @@ export const defaultListPageLayout: PageLayout = {
         }
       },
       mapFn: (node) => {
-        if (node.displayName === "Navigation") {
-          node.displayName = "🧭 Navigation"
-        }
+        // if (node.displayName === "Navigation") {
+        //   node.displayName = "🧭 Navigation"
+        // }
         return node
       },
     }),

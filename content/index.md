@@ -13,3 +13,6 @@ description: V1CeVersa 的论文列表。
 ## 论文列表
 
 - [强化学习 Reinforcement Learning](./topics/reinforcement_learning/)
+- [主动模仿学习 Active Imitation Learning](./topics/active_imitation_learning/)
+- [多模态推理 Multimodal Reasoning](./topics/multimodal_reasoning/)
+- [纯文本推理 Textual Reasoning](./topics/textual_reasoning/)

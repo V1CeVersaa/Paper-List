@@ -178,11 +178,13 @@ a {
       padding-left: 0;
     }
 
-    & li:has(> input[type="checkbox"]:checked) {
-      text-decoration: line-through;
-      text-decoration-color: var(--gray);
-      color: var(--gray);
-    }
+    // & li:has(> input[type="checkbox"]:checked) {
+    //   // color: var(--gray);
+
+    //   // & > p {
+    //   //   color: var(--gray);
+    //   // }
+    // }
 
     & li > * {
       margin-top: 0;
