@@ -1,5 +1,5 @@
 ---
-title: IL-ILEED
+title: ILEED
 headline: Imitation Learning by Estimating Expertise of Demonstrators
 ---
 

@@ -24,8 +24,8 @@ headline: Overview of Active Imitation Learning
 一些设定限制了我们访问专家的方式，例如只能查询专家在某个状态下的动作，不能大批量获得专家的轨迹数据，也不能访问专家的价值函数或者梯度信息。一般的奖励函数公式是未知的，但是允许智能体和环境进行交互，采样获得即时奖励信号与环境动态，从而估计专家的价值函数和优势函数。
 
 - [ ] NeurIPS 2024: Contextual Active Model Selection, [arXiv](https://arxiv.org/abs/2207.06030)
-- [ ] NeurIPS 2020, **MAMBA**: Policy Improvement via Imitation of Multiple Oracles, [arXiv](https://arxiv.org/abs/2007.00795)
-- [ ] ICML 2023, **MAPS**: Active Policy Improvement from Multiple Black-box Oracles, [arXiv](https://arxiv.org/abs/2306.10259), [Note](./AIL-MAPS.md)
+- [ ] NeurIPS 2020, **MAMBA**: Policy Improvement via Imitation of Multiple Oracles, [arXiv](https://arxiv.org/abs/2007.00795), [Note](./MAMBA.md)
+- [ ] ICML 2023, **MAPS**: Active Policy Improvement from Multiple Black-box Oracles, [arXiv](https://arxiv.org/abs/2306.10259), [Note](./MAPS.md)
 - [ ] ICLR 2024, **RPI**: Blending Imitation and Reinforcement Learning for Robust Policy Improvement, [arXiv](https://arxiv.org/abs/2310.01737)
 
 在 **MAMBA**、**MAPS** 以及 **RPI** 的设定下，我们考虑的是一个有限 MDP，智能体可以访问一组专家策略，记为 $\Pi = \{\pi^k\}_{k=1}^K$，这些专家都不是全局最优的，一般情况下互有优劣，不存在一个专家在所有状态下都优于其他专家的情况，这意味着智能体不能简单的只模仿一个专家，同时不同专家在不同状态下的表现也一般是不同的。专家/Oracle 对学习者来讲是一个黑盒，学习者可以**查询专家的动作**，或者可以连续让**专家和环境交互产生轨迹**，但是无法获得**专家内部的价值函数或者梯度信息**。但是，虽然奖励函数 $r$ 是未知的，智能体在开始的时候不能知道奖励函数的数学公式，但是在实际的交互过程中，**环境会反馈即时的奖励信号 $r(s,a)$**。因此可以通过采样的方式估计出**黑盒专家的价值函数 $\hat{V}^k(s)$** 以及优势函数 $A(s, a)$。
@@ -36,13 +36,13 @@ headline: Overview of Active Imitation Learning
 
 - [ ] arXiv 2020, **APIL**: Active Imitation Learning from Multiple Non-Deterministic Teachers: Formulation, Challenges, and Algorithms, [arXiv](https://arxiv.org/abs/2006.07777)
 - [ ] NeurIPS 2023, **RAVIOLI**: Selective Sampling and Imitation Learning via Online Regression, [arXiv](https://arxiv.org/abs/2307.04998)
-- [ ] NeurIPS 2023, **AURORA**: Contextual Bandits and Imitation Learning with Preference-Based Active Queries, [arXiv](https://arxiv.org/abs/2307.12926)
+- [ ] NeurIPS 2023, **AURORA**: Contextual Bandits and Imitation Learning with Preference-Based Active Queries, [arXiv](https://arxiv.org/abs/2307.12926), [Note](./AURORA.md)
 - [ ] NeurIPS 2025, **WARM-STAGGER**: Interactive and Hybrid Imitation Learning: Provably Beating Behavior Cloning, [OpenReview](https://openreview.net/forum?id=sT1U2enBh0)
 - [ ] ICLR 2025, **RND-Dagger**: Efficient Active Imitation Learning with Random Network Distillation, [arXiv](https://arxiv.org/abs/2411.01894)
 
 这些文章的算法结构高度相似，一个主要的 Learner 将 Oracle/Expert 的反馈当做监督信号，基于监督信号在线回归/结构预测一个模型，一个查询策略基于不确定性的估计来设计选择性采样，但是不确定性度量方法各不相同：
 
-- APIL 指出，Expert 行为的不确定性来自于两部分，一部分是 Intrinsic Uncertainty，指同一个状态下专家可能会给出不同的动作（专家是非确定性的），另一部分是 Extrinsic Uncertainty，这源于多个专家的行为差异性。对于单个确定性的 Expert 来讲，使用不确定性来作为查询的依据是合理的，因为这时候不确定性是零，但是对于多个非确定性的专家来讲，基于不确定性的查询策略就会引起灾难，因为这时候专家的不确定性就是一个非零的未知数，无法确定查询阈值。APIL 的状态空间是结构化的，是一个度量空间，其将状态分为两类，我们的目标是到达一个目标状态集 $S_G$ 内的状态，并且我们也有一个举例函数 $d(s)$ 来衡量当前状态和目标状态集的距离，只有当 $s$ 在 $S_G$ 内时，$d(s) = 0$。我们使用这个度量来替代不确定性，衡量边际贡献，设计查询策略。  
+<!-- - APIL 指出，Expert 行为的不确定性来自于两部分，一部分是 Intrinsic Uncertainty，指同一个状态下专家可能会给出不同的动作（专家是非确定性的），另一部分是 Extrinsic Uncertainty，这源于多个专家的行为差异性。对于单个确定性的 Expert 来讲，使用不确定性来作为查询的依据是合理的，因为这时候不确定性是零，但是对于多个非确定性的专家来讲，基于不确定性的查询策略就会引起灾难，因为这时候专家的不确定性就是一个非零的未知数，无法确定查询阈值。APIL 的状态空间是结构化的，是一个度量空间，其将状态分为两类，我们的目标是到达一个目标状态集 $S_G$ 内的状态，并且我们也有一个举例函数 $d(s)$ 来衡量当前状态和目标状态集的距离，只有当 $s$ 在 $S_G$ 内时，$d(s) = 0$。我们使用这个度量来替代不确定性，衡量边际贡献，设计查询策略。  
     APIL 构建一个 Teacher Persona 框架，将专家的策略建模为一个由身份分布 $\rho_\psi(k \mid s)$、persona 模型 $h_\phi(k)$ 以及 persona-conditioned 策略 $\hat{\pi}_{\theta, h}(a \mid s)$ 的随机过程。其先在这个框架内学习一个 Policy Distribution 模型，然后针对查询选择，构造一个预测未来表现的模型，估计在该状态下查询并且跟随专家行为，最后距离到达目标状态集的距离 $d(s)$ 会有多大，对比如果不查询专家，继续跟随当前学习者策略，距离目标状态集的距离 $d(s)$ 会有多大，两者的差值作为查询的收益，只有当收益大于一个阈值时才进行查询。
 - **RAVIOLI**：RAVIOLI 把主动 IL 抽象成一个带边际条件的在线回归与选择性采样问题。它假设专家可以由某个函数类 $F$ 中的 $f_\star$ 表示，对每个 $(x,a)$ 输出一个 score，score 越大动作越优。Learner 持续调用一个 online regression oracle 得到当前预测 $f_t$，并利用以往只在查询时才得到的标签构造一个高置信度版本空间
     $$
@@ -70,4 +70,4 @@ headline: Overview of Active Imitation Learning
     $$
 
     在训练过程中，只要 agent（由当前 policy 控制）访问到某个状态，就把它加入 RND 的训练数据，让 $f_{\text{pred}}$ 尽量拟合 $f_{\text{target}}$。结果是：对**频繁出现的 in-distribution 状态**，$\text{err}$ 会逐渐变小；对**少见或未见过的状态**，$\text{err}$ 会显著偏大，于是 $\text{err}$ 就可以当作一个不依赖 expert 的 OOD/novelty 指标。RND-DAgger 的查询规则是一个带“迟滞”的双阈值机制：当 agent 控制时，如果当前 $\text{err}(s)$ 超过上阈值 $\tau_{\text{high}}$，认为已经进入了高风险的分布外区域，便**切换为 expert 接管控制**，并把这一段 expert 轨迹加入 IL 训练数据；在 expert 控制阶段，如果连续 $W$ 步都满足 $\text{err}(s)$ 低于下阈值 $\tau_{\text{low}}$，就认为 expert 已经把系统带回熟悉区域，再把控制权交还给 Learner。这样一来，查询触发完全依赖**无监督的 state 新颖度**而非“实时比对 expert 动作”，既避免了每一步都要向 expert 要动作再比较的高负担，也能在真正危险 / 分布外的状态上集中获取高价值的演示，从而在保持最终 performance 的同时显著减少 expert intervention 时间和总 query 数量。
-
+ -->

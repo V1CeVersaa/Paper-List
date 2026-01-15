@@ -56,24 +56,6 @@ title: Navigation
 - [ ] AAAI 2019, **CRAR**: Combined Reinforcement Learning via Abstract Representations, [arXiv](https://arxiv.org/abs/1809.04506)
 - [ ] ICML 2019, **DeepMDP**: DeepMDP: Learning Continuous Latent Space Models for Representation Learning, [arXiv](https://arxiv.org/abs/1906.02736)
 
-## Imitation Learning
-
-**Tutorial**:
-
-- [ ] arXiv 2018: An Algorithmic Perspective on Imitation Learning, [arXiv](https://arxiv.org/abs/1811.06711)
-
-**Papers**:
-
-- [ ] AISTATS 2011, **DAgger**: A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning, [arXiv](https://arxiv.org/abs/1011.0686), [Note](./IL-DAgger.md)
-- [x] ICML 2022, **ILEED**: Imitation Learning by Estimating Expertise of Demonstrators, [arXiv](https://arxiv.org/abs/2202.01288), [Note](./IL-ILEED.md)
-
-- [ ] NIPS 2016, **GAIL**: Generative Adversarial Imitation Learning, [arXiv](https://arxiv.org/abs/1606.03476), [Note](./IL-GAIL.md)
-- [ ] NIPS 2017, **InfoGAIL**: Interpretable Imitation Learning from Visual Demonstrations, [arXiv](https://arxiv.org/abs/1703.08840), [Note](./IL-InfoGAIL.md)
-- [ ] IJCAI 2020, **Triple-GAIL**: Triple-GAIL: A Multi-Modal Imitation Learning Framework, [arXiv](https://arxiv.org/abs/2005.10622)
-- [ ] IJCAI 2021, **SAIL**: Robust Adversarial Imitation Learning via Adaptively-Selected Demonstrations, [IJCAI](https://www.ijcai.org/proceedings/2021/434)
-- [ ] ICLR 2023, **HOIL**: Seeing Differently, Acting Similarly: Heterogeneously Observable Imitation Learning, [arXiv](https://arxiv.org/abs/2106.09256)
-- [ ] ICML 2023, **PCIL**: Policy Contrastive Imitation Learning, [arXiv](https://arxiv.org/abs/2307.02829)
-
 ## Inverse Reinforcement Learning
 
 **Tutorial**:
@@ -97,6 +79,12 @@ title: Navigation
 - [ ] ICLR 2018 Workshop: Decoupling Dynamics and Reward for Transfer Learning, [arXiv](https://arxiv.org/abs/1804.10689)
 - [ ] ICLR 2021, **DBC**: Learning Invariant Representations for Reinforcement Learning without Reconstruction, [arXiv](https://arxiv.org/abs/2006.10742)
 - [ ] ICLR 2021, **HiP-BMP**: Learning Robust State Abstractions for Hidden-Parameter Block MDPs, [arXiv](https://arxiv.org/abs/2007.07206)
+
+## Explainable RL
+
+- [ ] NeurIPS 2019: Causal Confusion in Imitation Learning, [arXiv](https://arxiv.org/abs/1905.11979)
+- [ ] ICLR 2018: Learning Sparse Neural Networks through L0 Regularization, [arXiv](https://arxiv.org/abs/1712.01312)
+- [ ] NeurIPS 2023: StateMask: Explaining Deep Reinforcement Learning through State Mask, [OpenReview](https://openreview.net/forum?id=pzc6LnUxYN), [GitHub](https://github.com/nuwuxian/StateMask)
 
 ## Hierarchical RL / Temporal Abstraction
 

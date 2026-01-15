@@ -1,5 +1,5 @@
 ---
-title: PG-TRPO
+title: TRPO
 headline: Trust Region Policy Optimization
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: PG-Guide
+title: Policy Gradients Guide
 headline: The Definitive Guide to Policy Gradients
 ---
 
@@ -630,6 +630,99 @@ TRPO 的伪代码如下：
 ![](./assets/PG-Guide-7.png)
 
 ### 4.4 PPO
+
+<!--
+鉴于 TRPO 的复杂性，近端策略优化（Proximal Policy Optimization, PPO）[71] 的设计目标是在学习过程中对相邻两次策略之间的发散程度施加与 TRPO 相当的约束，同时将算法简化到不需要二阶方法。其做法是：在旧策略附近的一个近似信赖域之外，用启发式方式把梯度“压平”。此外，PPO 还使用了一种新的方法来学习优势函数的估计。 
+
+令
+[
+r_\theta(a\mid s)=\frac{\pi_\theta(a\mid s)}{\pi_{\text{old}}(a\mid s)}.
+]
+则 PPO 使用如下的策略梯度估计：
+[
+\widehat{\nabla_\theta J(\theta)}
+=\frac{1}{|D|}\sum_{s,a\in D}\hat{A}*\phi(s,a),\nabla*\theta
+\min\Big{,r_\theta(a\mid s),\ \mathrm{clip}\big(r_\theta(a\mid s),1-\epsilon,1+\epsilon\big)\Big}. \tag{18}
+]
+这里，截断函数 (\mathrm{clip}:\mathbb{R}\times\mathbb{R}\times\mathbb{R}\to\mathbb{R}) 定义为
+[
+\mathrm{clip}(x,a,b)=
+\begin{cases}
+a, & x<a,\
+x, & a\le x\le b,\
+b, & b<x,
+\end{cases}
+]
+并对 (r_\theta) 逐元素（element-wise）应用。(\epsilon) 是一个超参数。 
+
+**图 3：** PPO 目标函数的保守截断示意图。该图将其表示为单个 transition 的比值 (r_\theta) 的函数，并区分优势为正（a）与为负（b）的两种情形。复刻自 [71]。 
+
+该截断目标以保守的方式移除了“让新策略远离旧策略”的动机。直观地看，我们区分两种情况：估计优势 (\hat{A}(s,a)) 为正或为负（即动作 (a) 是“好”还是“坏”）。若 (\hat{A}(s,a)>0)，当 (a) 变得更可能时，代理目标 (J_{\text{PPO}}(\theta)) 会增大；同理，若 (\hat{A}(s,a)<0)，当 (a) 变得更不可能时，(J_{\text{PPO}}(\theta)) 会增大。因此我们希望相应地调整策略参数 (\theta)。然而，通过对策略比值 (r_\theta) 做截断，一旦超出截断区间，这种对目标函数的“正向推动”就会消失。该截断过程是保守的：只有当目标函数本会变好时才进行截断；如果策略朝相反方向变化导致 (J_{\text{PPO}}(\theta)) 变差，由于式 (18) 中取最小值，(r_\theta) 就不会被截断。图 3 展示了这一解释。PPO 的伪代码见算法 6。 
+
+---
+
+### 算法 6：PPO
+
+**输入：** (\epsilon\in\mathbb{R}), (\alpha\in(0,1]), (\gamma\in[0,1]), (\lambda\in[0,1]), (U\in\mathbb{N}), (T\in\mathbb{N})
+**初始化：** 随机初始化 (\theta) 与 (\phi)，并令 (t\leftarrow 0)
+
+当 (t\le T) 时循环： 
+
+1. 对 (i=1,\dots,U)：
+
+   * (a\sim \pi_\theta)（采样动作）
+   * (\beta(a\mid s)\leftarrow \pi_\theta(a\mid s))
+   * (s,r\sim P(s,a))（采样下一状态与奖励）
+   * (t\leftarrow t+1)
+   * 将 ((a,s,r,\beta(a\mid s))) 存入 (D)
+2. 对所有 epoch：
+
+   * (R,A\leftarrow \mathrm{computeGAE}(v,r,\lambda,\gamma))（计算回报与优势）
+   * (d_\theta \leftarrow \nabla_\theta \frac{1}{|D|}\sum_{D}\min!\left(\frac{\pi(a\mid s)}{\beta(a\mid s)},\ \mathrm{clip}!\left(\frac{\pi(a\mid s)}{\beta(a\mid s)},1-\epsilon,1+\epsilon\right)\right)A)
+   * (d_\phi \leftarrow \nabla_\phi \frac{1}{|D|}\sum_{D}\big(R-V_\phi(s)\big)^2)
+   * 使用 (d_\theta) 与 (d_\phi) 通过梯度上升/下降更新 (\theta) 与 (\phi)
+
+---
+
+为计算优势函数估计 (\hat{A}*\phi)，PPO 使用广义优势估计（Generalized Advantage Estimation, GAE）[70] 来进一步降低梯度的方差。GAE 将优势估计为
+[
+\hat{A}*\phi(s_t,a_t)=\sum_{i=t}^{T-1}(\gamma\lambda)^{i-t},\delta_i. \tag{19}
+]
+
+
+其中
+[
+\delta_i = r_i + \gamma \hat{V}*\phi(s*{i+1}) - \hat{V}*\phi(s_i).
+]
+价值函数估计 (\hat{V}*\phi) 通过最小化
+[
+\frac{1}{|D|}\sum_{D}\Big(\big(\hat{A}*\phi(s,a)+\hat{V}*\phi(s)\big)-\hat{V}_\phi(s)\Big)^2
+]
+来学习，其中第一项被视为与 (\phi) 无关。GAE 与资格迹（eligibility traces）[74] 的思想相关：在每个时间步同时利用采样到的奖励与当前的价值函数估计。通过这种指数加权的估计量，GAE 在引入对价值函数估计的轻微偏差（bias）的同时，降低了策略梯度的方差（variance）[70]。(\gamma) 与 (\lambda) 这两个超参数都会调整这种偏差—方差折中：(\gamma) 通过缩放价值函数估计 (\hat{V}) 来起作用，而 (\lambda) 控制对延迟奖励的依赖程度。注意：GAE 是 A3C 优势估计的严格推广，因为当 (\lambda=1) 时，式 (19) 会退化为式 (14)。GAE 的伪代码见算法 7。 
+
+---
+
+### 算法 7：GAE
+
+**输入：** (\gamma\in[0,1]), (\lambda\in[0,1])
+**输入：** 奖励 ((r_k)*{k=t}^{t+n})，价值 ((v_k)*{k=t}^{t+n+1})
+
+1. 令 (A_t,\dots,A_{t+n}\leftarrow 0)，(x\leftarrow 0)
+2. 对 (i=t+n,\dots,t)：
+
+   * 若该 transition 为终止（terminal），则 (\omega\leftarrow 1)，否则 (\omega\leftarrow 0)
+   * (\delta \leftarrow r_i + \gamma\cdot v_{i+1}\cdot(1-\omega)-v_i)
+   * (x \leftarrow \delta + \gamma\cdot\lambda\cdot(1-\omega)\cdot x)
+   * (A_i \leftarrow x)
+3. 对 (i=t,\dots,t+n)：
+
+   * (R_i \leftarrow A_i + v_i) 
+
+---
+
+除上述主要创新外，PPO 还使用若干实现层面的细节来改进学习效果。PPO 会对每一批数据进行多轮更新（multiple update epochs），使得多次梯度下降步骤都基于同一批 transition，从而提高样本效率并加速学习。此外，PPO 通常会在其代理目标中加入熵奖励项 (H(\pi_\theta(\cdot\mid s)))，并像 A3C 一样使用多个 actor。最后需要指出的是，还有一些算法作为 PPO 的修改版本被提出，例如 Phasic Policy Gradients [16] 与 Robust Policy Optimization [61]；由于它们只改动了少量细节，这里不再进一步讨论。 
+ -->
+
 
 ### 4.5 V-MPO
 
