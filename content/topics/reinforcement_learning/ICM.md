@@ -1,5 +1,5 @@
 ---
-title: EB-ICM
+title: ICM
 headline: Curiosity-driven Exploration by Self-supervised Prediction
 ---
 

@@ -5,9 +5,12 @@ public
 prof
 tsconfig.tsbuildinfo
 .obsidian
-# .quartz-cache
 private/
 .replit
 replit.nix
 
-.serena/*
+.quartz-cache/
+!.quartz-cache/fonts
+
+.serena/
+.claude/

@@ -1,5 +1,6 @@
 ---
-title: Navigation
+title: Overview
+headline: Overview of Reinforcement Learning
 ---
 
 ## Tutorial & Overview
@@ -26,7 +27,10 @@ title: Navigation
 
 - [ ] arXiv 2024: The Definitive Guide to Policy Gradients in Deep Reinforcement Learning: Theory, Algorithms and Implementations, [arXiv](https://arxiv.org/abs/2401.13662), [Note](./PG-Guide.md)
 
-**Papers**: 
+**Papers**:
+
+- [x] ICLR 2016, **GAE**: High-Dimensional Continuous Control Using Generalized Advantage Estimation, [arXiv](https://arxiv.org/abs/1506.02438), [Note](./GAE.md)
+- [x] NeurIPS 2022, **DAE**: Direct Advantage Estimation, [arXiv](https://arxiv.org/abs/2109.06093), [Note](./DAE.md)
 
 - [ ] NIPS 1999: Policy Gradient Methods for Reinforcement Learning with Function Approximation, [NIPS](https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)
 - [ ] ICML 2002, **CPI / Kakade & Langford**: Approximately Optimal Approximate Reinforcement Learning, [PDF](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/KakadeLangford-icml2002.pdf)
@@ -44,13 +48,14 @@ title: Navigation
 
 ## Exploration Bonus
 
-- [x] ICML 2017, **ICM**: Curiosity-driven Exploration by Self-supervised Prediction, [arXiv](https://arxiv.org/abs/1705.05363), [Note](./EB-ICM.md)
+- [x] ICML 2017, **ICM**: Curiosity-driven Exploration by Self-supervised Prediction, [arXiv](https://arxiv.org/abs/1705.05363), [Note](./ICM.md)
 - [ ] ICLR 2019, **RND**: Exploration by Random Network Distillation, [arXiv](https://arxiv.org/abs/1810.12894)
 
 ## Model-Based RL
 
 - [ ] arXiv 2017: Learning Model-based Planning from Scratch, [arXiv](https://arxiv.org/pdf/1707.06170)
 - [ ] ICML 2013: **Guided Policy Search**, [Online PDF](https://graphics.stanford.edu/projects/gpspaper/gps_full.pdf)
+- [x] NIPS 2015: Data Generation as Sequential Decision Making, [arXiv](https://arxiv.org/abs/1506.03504), [Note](./DGSM.md)
 - [ ] ICML 2017, **Predictron**: The Predictron: End-To-End Learning and Planning, [arXiv](https://arxiv.org/abs/1612.08810)
 - [ ] NIPS 2017, **VPN**: Value Prediction Network, [arXiv](https://arxiv.org/abs/1707.03497)
 - [ ] AAAI 2019, **CRAR**: Combined Reinforcement Learning via Abstract Representations, [arXiv](https://arxiv.org/abs/1809.04506)
@@ -64,7 +69,7 @@ title: Navigation
 
 **Papers**:
 
-- [ ] AAAI 2008, **MaxEnt IRL**: Maximum Entropy Inverse Reinforcement Learning, [AAAI](https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf), [Note](./IRL-MaxEnt.md)
+- [ ] AAAI 2008, **MaxEnt IRL**: Maximum Entropy Inverse Reinforcement Learning, [AAAI](https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf), [Note](./MaxEnt.md)
 - [ ] ICML 2016, **MaxEnt IOC**: Guided Cost Learning: Deep Inverse Optimal Control via Policy Optimization, [arXiv](https://arxiv.org/abs/1603.00448)
 - [ ] ICLR 2018, **AIRL**: Learning Robust Rewards with Adverserial Inverse Reinforcement Learning, [arXiv](https://arxiv.org/abs/1710.11248)
 
@@ -90,5 +95,4 @@ title: Navigation
 
 - [ ] AIJ 1999, **Options framework**: Between MDPs and Semi-MDPs: A Framework for Temporal Abstraction in RL, [AIJ/ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0004370299000521)
 - [ ] AAAI 2017, **Option-Critic**: The Option-Critic Architecture, [arXiv](https://arxiv.org/abs/1609.05140)
-- [ ] NeurIPS 2016, **STRAW**: Strategic Attentive Writer for Learning Macro-Actions, [arXiv](https://arxiv.org/abs/1606.04695)
-
+- [ ] NIPS 2016, **STRAW**: Strategic Attentive Writer for Learning Macro-Actions, [arXiv](https://arxiv.org/abs/1606.04695)
