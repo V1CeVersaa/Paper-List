@@ -17,6 +17,14 @@ def check_public_pages(issues: list[str]) -> None:
         if path.name not in {"index.md", "overview.md", "landscape.md"} and "status" not in frontmatter:
             issues.append(f"{path.relative_to(CONTENT.parent)} missing frontmatter key: status")
         visibility = frontmatter.get("visibility", "")
+        _structural = {"index.md", "overview.md", "landscape.md"}
+        # Require explicit visibility on non-structural pages.
+        # quartz/plugins/filters/draft.ts publishes by default when visibility is
+        # absent (fail-open), so omitting it silently exposes partially migrated content.
+        if path.name not in _structural and not visibility:
+            issues.append(
+                f"{path.relative_to(CONTENT.parent)} missing frontmatter key: visibility"
+            )
         # Flag private visibility in ANY tracked public content path, not just content/topics.
         # content/syntheses/, content/conferences/, and future roots all carry the same risk.
         # (content/local/ and content/drafts/ were already excluded at line 12.)

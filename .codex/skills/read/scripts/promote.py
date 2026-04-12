@@ -9,7 +9,7 @@ import sys
 SUPPORT = Path(__file__).resolve().parents[2] / "maintain" / "scripts"
 sys.path.insert(0, str(SUPPORT))
 
-from repo_ops import ROOT, append_log, ensure_overview_entry, today, update_frontmatter
+from repo_ops import ROOT, TOPICS, append_log, ensure_overview_entry, today, update_frontmatter
 
 
 def parse_args() -> argparse.Namespace:
@@ -35,10 +35,36 @@ def resolve(path_str: str) -> Path:
 def main() -> int:
     args = parse_args()
     source = resolve(args.source)
-    if not source.exists():
-        raise SystemExit(f"source note does not exist: {source}")
 
-    final_path = source
+    # Half-promote recovery: source is gone but target already exists, meaning a
+    # previous run moved the file but failed before finishing metadata sync.
+    # Resume from the metadata step instead of failing.
+    if not source.exists() and args.target:
+        target = resolve(args.target)
+        if target.exists():
+            print(
+                f"[promote] resuming half-promote: source gone, target exists at "
+                f"{target.relative_to(ROOT).as_posix()} — syncing metadata only",
+                file=sys.stderr,
+            )
+            final_path = target
+            args.target = ""  # skip the move block below
+        else:
+            raise SystemExit(f"source note does not exist: {source}")
+    elif not source.exists():
+        raise SystemExit(f"source note does not exist: {source}")
+    else:
+        final_path = source
+
+    # Preflight: verify overview.md exists before the irreversible move.
+    # This catches the most common post-move failure mode early.
+    overview_path = TOPICS / args.topic / "overview.md"
+    if not overview_path.exists():
+        raise SystemExit(
+            f"overview.md not found for topic '{args.topic}': {overview_path} — "
+            f"create the topic with /explore first"
+        )
+
     if args.target:
         target = resolve(args.target)
         if target.exists() and not args.force:
@@ -48,6 +74,19 @@ def main() -> int:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(source, target)
         final_path = target
+
+    # Topological guard: if the file was moved or recovered to a target path,
+    # verify it lives under content/topics/<topic>/ to prevent cross-topic
+    # metadata contamination from misrouted or retried promote calls.
+    if final_path != source:
+        topic_dir = TOPICS / args.topic
+        try:
+            final_path.relative_to(topic_dir)
+        except ValueError:
+            raise SystemExit(
+                f"target {final_path.relative_to(ROOT).as_posix()!r} is not under "
+                f"content/topics/{args.topic}/ — verify --target and --topic match"
+            )
 
     update_frontmatter(
         final_path,
