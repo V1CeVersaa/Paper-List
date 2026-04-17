@@ -1,6 +1,9 @@
 ---
-title: Overview
-headline: Overview of Reinforcement Learning
+title: "Overview"
+headline: "Overview of Reinforcement Learning"
+visibility: "public"
+status: "complete"
+description: "Queue and reading progress for Reinforcement Learning."
 ---
 
 ## Tutorial & Overview
@@ -25,7 +28,7 @@ headline: Overview of Reinforcement Learning
 
 **Tutorial**:
 
-- [ ] arXiv 2024: The Definitive Guide to Policy Gradients in Deep Reinforcement Learning: Theory, Algorithms and Implementations, [arXiv](https://arxiv.org/abs/2401.13662), [Note](./PG-Guide.md)
+- [ ] arXiv 2024: The Definitive Guide to Policy Gradients in Deep Reinforcement Learning: Theory, Algorithms and Implementations, [arXiv](https://arxiv.org/abs/2401.13662), [Note](./pg_guide.md)
 
 **Papers**:
 
@@ -72,6 +75,10 @@ headline: Overview of Reinforcement Learning
 - [ ] AAAI 2008, **MaxEnt IRL**: Maximum Entropy Inverse Reinforcement Learning, [AAAI](https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf), [Note](./MaxEnt.md)
 - [ ] ICML 2016, **MaxEnt IOC**: Guided Cost Learning: Deep Inverse Optimal Control via Policy Optimization, [arXiv](https://arxiv.org/abs/1603.00448)
 - [ ] ICLR 2018, **AIRL**: Learning Robust Rewards with Adverserial Inverse Reinforcement Learning, [arXiv](https://arxiv.org/abs/1710.11248)
+
+## Self-Supervised RL
+
+- [ ] NeurIPS 2025 Best Paper: 1000 Layer Networks for Self-Supervised RL: Scaling Depth Can Enable New Goal-Reaching Capabilities, [arXiv](https://arxiv.org/abs/2503.14858), [Note](./scale_self_supervised.md)
 
 ## Generalization & Overfitting
 

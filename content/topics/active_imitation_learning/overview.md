@@ -1,6 +1,9 @@
 ---
-title: Overview
-headline: Overview of Active Imitation Learning
+title: "Overview"
+headline: "Overview of Active Imitation Learning"
+visibility: "public"
+status: "complete"
+description: "Queue and reading progress for Active Imitation Learning."
 ---
 
 ## 1. Single Expert Active Imitation Learning
@@ -24,11 +27,11 @@ headline: Overview of Active Imitation Learning
 一些设定限制了我们访问专家的方式，例如只能查询专家在某个状态下的动作，不能大批量获得专家的轨迹数据，也不能访问专家的价值函数或者梯度信息。一般的奖励函数公式是未知的，但是允许智能体和环境进行交互，采样获得即时奖励信号与环境动态，从而估计专家的价值函数和优势函数。
 
 - [ ] NeurIPS 2024: Contextual Active Model Selection, [arXiv](https://arxiv.org/abs/2207.06030)
-- [ ] NeurIPS 2020, **MAMBA**: Policy Improvement via Imitation of Multiple Oracles, [arXiv](https://arxiv.org/abs/2007.00795), [Note](./MAMBA.md)
-- [ ] ICML 2023, **MAPS**: Active Policy Improvement from Multiple Black-box Oracles, [arXiv](https://arxiv.org/abs/2306.10259), [Note](./MAPS.md)
-- [ ] ICLR 2024, **RPI**: Blending Imitation and Reinforcement Learning for Robust Policy Improvement, [arXiv](https://arxiv.org/abs/2310.01737)
+- [x] NeurIPS 2020, **MAMBA**: Policy Improvement via Imitation of Multiple Oracles, [arXiv](https://arxiv.org/abs/2007.00795), [Note](./MAMBA.md)
+- [x] ICML 2023, **MAPS**: Active Policy Improvement from Multiple Black-box Oracles, [arXiv](https://arxiv.org/abs/2306.10259), [Note](./MAPS.md)
+- [x] ICLR 2024, **RAPS**: Blending Imitation and Reinforcement Learning for Robust Policy Improvement, [arXiv](https://arxiv.org/abs/2310.01737), [Note](./RAPS.md)
 
-在 **MAMBA**、**MAPS** 以及 **RPI** 的设定下，我们考虑的是一个有限 MDP，智能体可以访问一组专家策略，记为 $\Pi = \{\pi^k\}_{k=1}^K$，这些专家都不是全局最优的，一般情况下互有优劣，不存在一个专家在所有状态下都优于其他专家的情况，这意味着智能体不能简单的只模仿一个专家，同时不同专家在不同状态下的表现也一般是不同的。专家/Oracle 对学习者来讲是一个黑盒，学习者可以**查询专家的动作**，或者可以连续让**专家和环境交互产生轨迹**，但是无法获得**专家内部的价值函数或者梯度信息**。但是，虽然奖励函数 $r$ 是未知的，智能体在开始的时候不能知道奖励函数的数学公式，但是在实际的交互过程中，**环境会反馈即时的奖励信号 $r(s,a)$**。因此可以**通过采样的方式估计**出**黑盒专家的价值函数 $\hat{V}^k(s)$** 以及优势函数 $A(s, a)$。
+在 **MAMBA**、**MAPS** 以及 **RAPS** 的设定下，我们考虑的是一个有限 MDP，智能体可以访问一组专家策略，记为 $\Pi = \{\pi^k\}_{k=1}^K$，这些专家都不是全局最优的，一般情况下互有优劣，不存在一个专家在所有状态下都优于其他专家的情况，这意味着智能体不能简单的只模仿一个专家，同时不同专家在不同状态下的表现也一般是不同的。专家/Oracle 对学习者来讲是一个黑盒，学习者可以**查询专家的动作**，或者可以连续让**专家和环境交互产生轨迹**，但是无法获得**专家内部的价值函数或者梯度信息**。但是，虽然奖励函数 $r$ 是未知的，智能体在开始的时候不能知道奖励函数的数学公式，但是在实际的交互过程中，**环境会反馈即时的奖励信号 $r(s,a)$**。因此可以**通过采样的方式估计**出**黑盒专家的价值函数 $\hat{V}^k(s)$** 以及优势函数 $A(s, a)$。
 
 在这种设定下，一般的流程（以 MAPS 为例）是：先让学习者在 Horizon 内与环境交互几步，然后专家上号，一直控制到本集结束（到了 Horizon 限制或者到达终止状态），这样产生了一个混合轨迹，后半段是专家跑出来的（带奖励数据），利用这部分数据可以更新估计专家的价值函数，然后学习者再完整跑一集，利用收集的数据以及根据专家价值函数的的估计计算策略梯度，进行对学习者参数的更新。这样的算法结合了模仿学习和强化学习的思想，一方面可以利用专家来进行一部分蒸馏，可以节省样本复杂度，另一方面可以使用强化学习的方法来进一步优化回报，比较当前学习者和专家的差距，博采众长，实现超越所有专家的性能提升。
 

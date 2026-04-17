@@ -1,6 +1,9 @@
 ---
-title: GAE
+title: "GAE"
 headline: "High-Dimensional Continuous Control Using Generalized Advantage Estimation"
+visibility: "public"
+status: "complete"
+description: "Paper note on High-Dimensional Continuous Control Using Generalized Advantage Estimation."
 ---
 
 > [!abstract] Contributions

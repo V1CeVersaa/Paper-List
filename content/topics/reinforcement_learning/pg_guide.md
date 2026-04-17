@@ -1,6 +1,9 @@
 ---
-title: Policy Gradients Guide
-headline: The Definitive Guide to Policy Gradients
+title: "Policy Gradients Guide"
+headline: "The Definitive Guide to Policy Gradients"
+visibility: "public"
+status: "complete"
+description: "Paper note on The Definitive Guide to Policy Gradients."
 ---
 
 > [!abstract]

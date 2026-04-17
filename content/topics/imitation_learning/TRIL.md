@@ -1,6 +1,9 @@
 ---
-title: TPIL
+title: "TPIL"
 headline: "Third-Person Imitation Learning"
+visibility: "public"
+status: "complete"
+description: "Paper note on Third-Person Imitation Learning."
 ---
 
 > [!abstract] Contributions

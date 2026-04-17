@@ -1,6 +1,9 @@
 ---
-title: AggreVaTeD
+title: "AggreVaTeD"
 headline: "Deeply AggreVaTeD: Differentiable Imitation Learning for Sequential Prediction"
+visibility: "public"
+status: "complete"
+description: "Paper note on Deeply AggreVaTeD: Differentiable Imitation Learning for Sequential Prediction."
 ---
 
 > [!abstract]

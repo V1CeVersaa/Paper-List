@@ -1,4 +1,8 @@
 ---
-title: Neural-Symbolic VQA
+title: "Neural-Symbolic VQA"
 headline: "Neural-Symbolic VQA: Disentangling Reasoning from Vision and Language Understanding"
+visibility: "public"
+status: "complete"
+description: "Paper note on Neural-Symbolic VQA: Disentangling Reasoning from Vision and Language Understanding."
 ---
+

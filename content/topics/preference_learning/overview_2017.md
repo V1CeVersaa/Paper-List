@@ -1,6 +1,9 @@
 ---
-title: Preference-Based RL
-headline: A Survey of Preference-Based Reinforcement Learning Methods
+title: "Preference-Based RL"
+headline: "A Survey of Preference-Based Reinforcement Learning Methods"
+visibility: "public"
+status: "complete"
+description: "Paper note on A Survey of Preference-Based Reinforcement Learning Methods."
 ---
 
 > [!note] 时间限制：本综述发布于 2017 年，有的算法可能过时了

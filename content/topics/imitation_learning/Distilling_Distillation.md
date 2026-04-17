@@ -1,6 +1,9 @@
 ---
-title: Distilling Policy Distillation
+title: "Distilling Policy Distillation"
 headline: "Distilling Policy Distillation"
+visibility: "public"
+status: "complete"
+description: "Paper note on Distilling Policy Distillation."
 ---
 
 > [!abstract] Contributions

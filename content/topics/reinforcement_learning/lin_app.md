@@ -1,6 +1,9 @@
 ---
-title: Linear Approximation
-headline: Provably Efficient Reinforcement Learning with Linear Function Approximation
+title: "Linear Approximation"
+headline: "Provably Efficient Reinforcement Learning with Linear Function Approximation"
+visibility: "public"
+status: "drafting"
+description: "Paper note on Provably Efficient Reinforcement Learning with Linear Function Approximation."
 ---
 
 ## 1. Introduction

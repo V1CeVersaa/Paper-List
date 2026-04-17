@@ -1,6 +1,9 @@
 ---
-title: Tree of Thoughts
+title: "Tree of Thoughts"
 headline: "Tree of Thoughts: Deliberate Problem Solving with Large Language Models"
+visibility: "public"
+status: "complete"
+description: "Paper note on Tree of Thoughts: Deliberate Problem Solving with Large Language Models."
 ---
 
 > [!abstract]

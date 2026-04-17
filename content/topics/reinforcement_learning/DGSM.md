@@ -1,6 +1,9 @@
 ---
-title: DGSM
-headline: Data Generation as Sequential Decision Making
+title: "DGSM"
+headline: "Data Generation as Sequential Decision Making"
+visibility: "public"
+status: "drafting"
+description: "Paper note on Data Generation as Sequential Decision Making."
 ---
 
 > [!abstract] Contributions

@@ -1,6 +1,9 @@
 ---
-title: SITT
+title: "SITT"
 headline: "Student-Informed Teacher Training"
+visibility: "public"
+status: "drafting"
+description: "Paper note on Student-Informed Teacher Training."
 ---
 
 > [!abstract] Contributions

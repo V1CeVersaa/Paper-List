@@ -1,6 +1,9 @@
 ---
-title: TRPO
-headline: Trust Region Policy Optimization
+title: "TRPO"
+headline: "Trust Region Policy Optimization"
+visibility: "public"
+status: "complete"
+description: "Paper note on Trust Region Policy Optimization."
 ---
 
 > [!abstract]

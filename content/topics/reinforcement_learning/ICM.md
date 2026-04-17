@@ -1,6 +1,9 @@
 ---
-title: ICM
-headline: Curiosity-driven Exploration by Self-supervised Prediction
+title: "ICM"
+headline: "Curiosity-driven Exploration by Self-supervised Prediction"
+visibility: "public"
+status: "complete"
+description: "Paper note on Curiosity-driven Exploration by Self-supervised Prediction."
 ---
 
 > [!abstract]

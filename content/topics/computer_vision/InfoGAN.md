@@ -1,6 +1,9 @@
 ---
-title: InfoGAN
+title: "InfoGAN"
 headline: "InfoGAN: Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets"
+visibility: "public"
+status: "complete"
+description: "Paper note on InfoGAN: Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets."
 ---
 
 > [!abstract]

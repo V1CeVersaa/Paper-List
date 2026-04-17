@@ -1,6 +1,9 @@
 ---
-title: Policy Distillation
+title: "Policy Distillation"
 headline: "Policy Distillation"
+visibility: "public"
+status: "drafting"
+description: "Paper note on Policy Distillation."
 ---
 
 > [!abstract] Contributions

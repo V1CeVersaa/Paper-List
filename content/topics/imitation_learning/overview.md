@@ -1,6 +1,9 @@
 ---
-title: Overview
-headline: Overview of Imitation Learning
+title: "Overview"
+headline: "Overview of Imitation Learning"
+visibility: "public"
+status: "complete"
+description: "Queue and reading progress for Imitation Learning."
 ---
 
 ## Tutorial
@@ -15,7 +18,7 @@ headline: Overview of Imitation Learning
 
 **Adversarial Imitation Learning**:
 
-- [ ] NIPS 2016, **GAIL**: Generative Adversarial Imitation Learning, [arXiv](https://arxiv.org/abs/1606.03476), [Note](./GAIL.md)
+- [x] NIPS 2016, **GAIL**: Generative Adversarial Imitation Learning, [arXiv](https://arxiv.org/abs/1606.03476), [Note](./GAIL.md)
 - [ ] ICLR 2017, **TPIL**: Third-Person Imitation Learning, [arXiv](https://arxiv.org/abs/1703.01703), [Note](./TRIL.md)
 - [ ] NIPS 2017, **InfoGAIL**: Interpretable Imitation Learning from Visual Demonstrations, [arXiv](https://arxiv.org/abs/1703.08840), [Note](./InfoGAIL.md)
 - [ ] IJCAI 2020, **Triple-GAIL**: Triple-GAIL: A Multi-Modal Imitation Learning Framework, [arXiv](https://arxiv.org/abs/2005.10622)

@@ -1,6 +1,9 @@
 ---
-title: InfoGAIL
+title: "InfoGAIL"
 headline: "InfoGAIL: Interpretable Imitation Learning from Visual Demonstrations"
+visibility: "public"
+status: "drafting"
+description: "Paper note on InfoGAIL: Interpretable Imitation Learning from Visual Demonstrations."
 ---
 
 > [!abstract] Contributions
@@ -50,7 +53,7 @@ $$
 
 其中 $D$ 是判别器，试图区分学习策略 $\pi$ 和专家策略 $\pi_E$ 产生的状态-动作对；$H(\pi) \triangleq \mathbb{E}_\pi[-\log \pi(a|s)]$ 是策略的 $\gamma$-折扣因果熵，用于鼓励探索。该目标的内层最大化对应于训练一个最优判别器来度量两个状态-动作分布之间的 Jensen-Shannon 散度/JS Divergence，外层最小化则让策略分布逼近专家分布——当两者的占用度量完全匹配时，最优判别器输出恒为 $1/2$，目标达到最优。
 
-GAIL 是 model-free 的：它将环境/模拟器视为黑盒，不需要构建环境模型，但需要与环境交互来生成 rollout。与 GAN 不同的是，由于环境不可微，策略的优化无法直接反向传播，而需要依赖基于蒙特卡洛采样的策略梯度方法。具体而言，优化通过交替执行两步完成：对判别器参数进行梯度上升以增大 $\eqref{1}$，对策略参数通过 TRPO/Trust Region Policy Optimization 进行更新以减小 $\eqref{1}$。
+GAIL 是 model-free 的：它将环境/模拟器视为黑盒，不需要构建环境模型，但需要与环境交互来生成 rollout。与 GAN 不同的是，由于环境不可微，策略的优化无法直接反向传播，而需要依赖基于蒙特卡洛采样的策略梯度方法。具体而言，优化通过交替执行两步完成：对判别器参数进行梯度上升以增大 $(1)$，对策略参数通过 TRPO/Trust Region Policy Optimization 进行更新以减小 $(1)$。
 
 直接在 GAIL 的策略中加入隐变量 $c$（即使用 $\pi(a|s,c)$）并不能保证模型会有意义地利用 $c$——策略完全可以忽略 $c$ 而仍然最小化 GAIL 目标。为解决这一问题，InfoGAIL 借鉴 *InfoGAN* 的信息论正则化思想：要求隐变量 $c$ 与策略生成的轨迹 $\tau$ 之间保持高互信息 $I(c; \tau)$。
 
@@ -99,9 +102,9 @@ $$
 \tag{3}
 $$
 
-其中 $\lambda_1 > 0$ 控制互信息正则化的强度，$\lambda_2 > 0$ 控制因果熵项。与 GAIL 的目标 $\eqref{1}$ 对比，InfoGAIL 增加了两个关键组件：引导策略有意义地利用隐变量的互信息下界 $L_I$（来自 $\eqref{2}$ 的推导），以及用于近似后验推断的网络 $Q$。优化变量也相应扩展——策略和后验网络联合最小化，判别器最大化。
+其中 $\lambda_1 > 0$ 控制互信息正则化的强度，$\lambda_2 > 0$ 控制因果熵项。与 GAIL 的目标 $(1)$ 对比，InfoGAIL 增加了两个关键组件：引导策略有意义地利用隐变量的互信息下界 $L_I$（来自 $(2)$ 的推导），以及用于近似后验推断的网络 $Q$。优化变量也相应扩展——策略和后验网络联合最小化，判别器最大化。
 
-将 $L_I$ 展开，目标 $\eqref{3}$ 中策略 $\pi$ 的优化方向可以更直观地理解：$\pi$ 需要同时 (a) 在判别器意义下模仿专家、(b) 使不同 $c$ 值下的行为足够可区分（由 $Q$ 度量）、(c) 保持足够的随机性（熵项）。这三个信号的平衡由 $\lambda_1, \lambda_2$ 控制。
+将 $L_I$ 展开，目标 $(3)$ 中策略 $\pi$ 的优化方向可以更直观地理解：$\pi$ 需要同时 (a) 在判别器意义下模仿专家、(b) 使不同 $c$ 值下的行为足够可区分（由 $Q$ 度量）、(c) 保持足够的随机性（熵项）。这三个信号的平衡由 $\lambda_1, \lambda_2$ 控制。
 
 ### 3.2 Reward Augmentation
 

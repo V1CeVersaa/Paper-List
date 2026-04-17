@@ -1,6 +1,9 @@
 ---
-title: AURORA
+title: "AURORA"
 headline: "Contextual Bandits and Imitation Learning via Preference-Based Active Queries"
+visibility: "public"
+status: "complete"
+description: "Paper note on Contextual Bandits and Imitation Learning via Preference-Based Active Queries."
 ---
 
 > [!abstract] Contributions

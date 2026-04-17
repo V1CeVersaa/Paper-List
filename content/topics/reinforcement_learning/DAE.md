@@ -1,6 +1,9 @@
 ---
-title: DAE
+title: "DAE"
 headline: "Direct Advantage Estimation"
+visibility: "public"
+status: "drafting"
+description: "Paper note on Direct Advantage Estimation."
 ---
 
 > [!abstract] Contributions

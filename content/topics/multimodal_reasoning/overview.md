@@ -1,6 +1,9 @@
 ---
-title: Overview
-headline: Overview of Multimodal Reasoning
+title: "Overview"
+headline: "Overview of Multimodal Reasoning"
+visibility: "public"
+status: "complete"
+description: "Queue and reading progress for Multimodal Reasoning."
 ---
 
 ## Multimodal Large Language Models

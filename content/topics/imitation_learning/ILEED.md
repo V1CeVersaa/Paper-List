@@ -1,6 +1,9 @@
 ---
-title: ILEED
-headline: Imitation Learning by Estimating Expertise of Demonstrators
+title: "ILEED"
+headline: "Imitation Learning by Estimating Expertise of Demonstrators"
+visibility: "public"
+status: "complete"
+description: "Paper note on Imitation Learning by Estimating Expertise of Demonstrators."
 ---
 
 > [!abstract] Contributions
