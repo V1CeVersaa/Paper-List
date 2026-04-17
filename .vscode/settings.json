@@ -1,3 +1,9 @@
 {
-    "workbench.colorTheme": "Catppuccin Latte"
+    "workbench.colorTheme": "Dark 2026",
+    "files.exclude": {
+        ".quartz-cache": true,
+        "node_modules": true,
+        "**/__pycache__": true,
+        "public": true
+    }
 }

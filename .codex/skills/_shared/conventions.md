@@ -59,6 +59,24 @@ The path determines visibility semantics. Frontmatter `visibility` must agree wi
 
 ---
 
+## Tag Policy
+
+Frontmatter `tags` are for retrieval and synthesis, not for exhaustively restating every concept in the paper.
+
+Rules:
+- Keep tags sparse. Default to `0-3` tags; do not add filler tags just because a field exists.
+- Order tags from highest fit and importance to lowest.
+- The **first tag is the primary tag** and is the one index-style list pages are allowed to display.
+- For notes under `content/topics/<topic>/`, do not use that same topic slug as the first tag when a more specific tag is available. Prefer the more discriminative tag first, and usually drop the redundant topic tag entirely.
+- Prefer stable, reusable concepts over paper-specific wording.
+- If two candidate tags overlap heavily, keep the more informative one and drop the weaker alias.
+
+Examples:
+- Good: `["policy_optimization", "trust_region"]`
+- Too broad/noisy: `["reinforcement_learning", "optimization", "policy", "trust_region", "theory"]`
+
+---
+
 ## Deduplication Priority (Three-Tier)
 
 When checking whether a paper already exists before `/intake` or `/read`:

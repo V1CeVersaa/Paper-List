@@ -9,6 +9,7 @@ venue: "{{venue}}"
 year: "{{year}}"
 paper_url: "{{paper_url}}"
 source_pdf: "{{source_pdf}}"
+# Primary tag first; avoid repeating the current topic slug in first position.
 tags: []
 related: []
 created: "{{created}}"

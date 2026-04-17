@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import sys
 
 from repo_ops import CONTENT, TOPICS, TOPICS_INDEX, HOME_INDEX, git_tracked, parse_frontmatter, read_text
+
+
+def parse_inline_tags(raw: str) -> list[str] | None:
+    raw = raw.strip()
+    if not raw:
+        return []
+    if not raw.startswith("["):
+        return None
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(parsed, list):
+        return None
+    return [str(tag).strip() for tag in parsed if str(tag).strip()]
 
 
 def check_public_pages(issues: list[str]) -> None:
@@ -31,6 +47,16 @@ def check_public_pages(issues: list[str]) -> None:
         if visibility in {"draft", "local"}:
             issues.append(
                 f"{path.relative_to(CONTENT.parent)} uses visibility={visibility} in a tracked public path"
+            )
+        parsed_tags = parse_inline_tags(frontmatter.get("tags", ""))
+        if parsed_tags is not None and len(parsed_tags) > 3:
+            issues.append(
+                f"{path.relative_to(CONTENT.parent)} has too many tags ({len(parsed_tags)} > 3)"
+            )
+        topic = frontmatter.get("topic", "").strip()
+        if topic and parsed_tags and len(parsed_tags) > 1 and parsed_tags[0] == topic:
+            issues.append(
+                f"{path.relative_to(CONTENT.parent)} uses topic={topic} as the primary tag despite having a more specific tag"
             )
 
 

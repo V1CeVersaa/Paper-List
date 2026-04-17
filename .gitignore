@@ -12,5 +12,24 @@ replit.nix
 .quartz-cache/
 !.quartz-cache/fonts
 
-.serena/
 .claude/
+.codex/
+!.codex/
+!.codex/skills/
+!.codex/skills/**
+
+__pycache__/
+
+inbox/*
+!inbox/.gitkeep
+
+raw/papers/*
+!raw/papers/.gitkeep
+raw/reports/*
+!raw/reports/.gitkeep
+
+ops/*
+!ops/.gitkeep
+
+content/local/
+content/drafts/

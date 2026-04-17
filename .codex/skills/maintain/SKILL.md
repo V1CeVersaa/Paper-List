@@ -28,6 +28,8 @@ description: Use when the user asks to tidy, check, or sync the repo — "帮我
 | `visibility=draft in tracked public path` | Private visibility in public directory | Change `visibility` to `public`, or move file to `content/drafts/` | Confirm user intent before moving |
 | `missing required file: overview.md` | Topic directory has no overview | Generate from `../explore/assets/overview.md` template | Content must be filled by user/agent |
 | `missing required file: index.md` | Topic directory has no index | Generate from `../explore/assets/topic-index.md` template | Scope section must be filled |
+| `too many tags` | A page is carrying a noisy frontmatter tag list | Trim to the highest-signal `0-3` tags | Decide which tags are primary vs. expendable |
+| `topic used as primary tag` | The first tag repeats the note's own topic and wastes the primary display slot | Move a more specific tag to first position, or drop the redundant topic tag | Decide whether the topic tag still adds retrieval value |
 | `git-tracked private path detected` | Private file in git index | `git rm --cached <file>` | Confirm no sensitive content first |
 | `missing auto topic markers` | Index file lacks `<!-- AUTO:TOPICS:START/END -->` | Append markers + regenerate with `rebuild_index.py` | Check insertion point is appropriate |
 

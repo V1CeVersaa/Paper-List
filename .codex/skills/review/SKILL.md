@@ -32,6 +32,7 @@ description: Use when the user wants a quality check on existing notes without e
    - Is there translation residue (sentence-by-sentence mapping)?
    - Are there `TODO` placeholders?
    - Is the frontmatter complete (`headline`, `tags`, `related`, `status: complete`)?
+   - If tags exist, are they sparse and ordered from strongest fit to weakest, with the primary tag first and not merely repeating the note's own topic slug?
 3. Categorize findings into three tiers:
    - **Must fix**: structural errors, missing required sections, `TODO` placeholders, visible translation residue
    - **Should fix**: thin sections, missing term pairing format, weak Contributions second paragraph

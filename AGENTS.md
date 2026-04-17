@@ -363,7 +363,7 @@ Use these fields when the page type supports them:
 - `paper_url`: canonical paper URL
 - `source_pdf`: relative path into `raw/papers/` when archived locally
 - `priority`: `high | normal | low` for inbox items
-- `tags`: normalized tags for search and future topic synthesis
+- `tags`: normalized tags for search and future topic synthesis; keep them sparse (normally `0-3`), order them from highest fit/importance to lowest, and treat the first tag as the primary display tag in index views. For topic-scoped notes, do not put the current `topic` slug first when a more specific tag exists.
 - `related`: related page links or nearby work
 - `created` / `updated` / `last_reviewed`: lifecycle timestamps
 

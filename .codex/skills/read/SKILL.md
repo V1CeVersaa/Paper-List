@@ -35,15 +35,20 @@ description: Use when the user wants a finished note for a single paper — incl
 2. Use `assets/paper.md` as the scaffold if starting from scratch.
 3. Follow the writing standard in `AGENTS.md §3` (also mirrored at `references/writing-guide.md`). The five-section structure is the default:
    - `Contributions` callout → `Introduction` → `Problem Setup` → `Algorithm/Methods/Model` → `Experiments` → `Related Work & Future Work`
-4. **Adjust depth by paper type** (not separate branches — same structure, different emphasis):
+4. Set frontmatter `tags` sparingly:
+   - Default to `0-3` tags, not a concept dump
+   - Sort them from highest fit / highest importance to lowest
+   - Treat the first tag as the primary tag that index pages may surface
+   - If the note lives under a topic folder, do not make the current `topic` slug the first tag when a more specific tag exists
+5. **Adjust depth by paper type** (not separate branches — same structure, different emphasis):
    - **Theory-heavy** (main contribution is theorems/derivations): preserve derivation chains step by step; use `> [!todo]-` collapsible blocks for proofs; Method section is the heaviest
    - **Empirical-heavy** (main contribution is system/experiments): Experiments section emphasizes 2–3 key ablations; Method section treats implementation details lightly
    - **Short / Workshop** (< 8 pages): Contributions block can be one paragraph; Related Work may be omitted; sections may be combined
-5. Run `python3 .codex/skills/read/scripts/promote.py ...` when the note is ready (moves file, updates frontmatter).
-6. Run `python3 .codex/skills/read/scripts/sync_overview.py ...` after promote to mark the overview entry `[x]`.
+6. Run `python3 .codex/skills/read/scripts/promote.py ...` when the note is ready (moves file, updates frontmatter).
+7. Run `python3 .codex/skills/read/scripts/sync_overview.py ...` after promote to mark the overview entry `[x]`.
    - **Order matters**: promote first (establishes canonical path), then sync_overview (builds the correct relative `[Note](...)` link).
-7. Delete inbox item if the read started from inbox (promote.py handles this with `--inbox`).
-8. Append ops log entry (`event=read` and `event=promote`).
+8. Delete inbox item if the read started from inbox (promote.py handles this with `--inbox`).
+9. Append ops log entry (`event=read` and `event=promote`).
 
 ## Files It May Write
 
@@ -63,6 +68,7 @@ description: Use when the user wants a finished note for a single paper — incl
 
 - The note exists in its final location (`content/topics/<topic>/`)
 - Frontmatter `status` is `complete`, `visibility` is `public`
+- Frontmatter `tags`, if present, are sparse and ordered by fit/importance with the primary tag first
 - The topic `overview.md` entry is marked `[x]` with a `[Note](...)` link
 - The inbox item is removed if the read started from inbox
 - Writing quality meets the standard in `AGENTS.md §3` (Contributions block, 5-section structure, term pairing, no translation residue)
