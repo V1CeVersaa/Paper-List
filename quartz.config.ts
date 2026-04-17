@@ -1,6 +1,9 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 
+const isPrivateBuild =
+  process.env.QUARTZ_PRIVATE === "1" || process.env.QUARTZ_PRIVATE === "true"
+
 /**
  * Quartz 4 Configuration
  *
@@ -17,7 +20,9 @@ const config: QuartzConfig = {
     },
     locale: "en-US",
     baseUrl: "papers.v1ceversaa.cc",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    ignorePatterns: isPrivateBuild
+      ? ["private", "templates", ".obsidian"]
+      : ["private", "templates", ".obsidian", "local", "drafts"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",

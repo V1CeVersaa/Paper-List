@@ -1,5 +1,8 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
+import { createExplorerSortFn } from "./quartz/util/explorerSort"
+
+const explorerSortFn = createExplorerSortFn()
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -40,26 +43,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Explorer({
       folderDefaultState: "open",
       defaultOpenDepth: 0,
-      sortFn: (a, b) => {
-        if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
-          if (!a.isFolder && !b.isFolder) {
-            const aIsNav = a.data?.title === "Navigation"
-            const bIsNav = b.data?.title === "Navigation"
-            if (aIsNav && !bIsNav) return -1
-            if (!aIsNav && bIsNav) return 1
-          }
-          return a.displayName.localeCompare(b.displayName, undefined, {
-            numeric: true,
-            sensitivity: "base",
-          })
-        }
-
-        if (!a.isFolder && b.isFolder) {
-          return 1
-        } else {
-          return -1
-        }
-      },
+      sortFn: explorerSortFn,
       mapFn: (node) => {
         return node
       },
@@ -90,55 +74,7 @@ export const defaultListPageLayout: PageLayout = {
     Component.Explorer({
       folderDefaultState: "open",
       defaultOpenDepth: 1,
-      sortFn: (a, b) => {
-        // files after folders
-        if (!a.isFolder && b.isFolder) return 1
-        if (a.isFolder && !b.isFolder) return -1
-
-        // both are files: Navigation > Overview > alphabetical
-        if (!a.isFolder && !b.isFolder) {
-          const aIsNav = a.data?.title === "Navigation"
-          const bIsNav = b.data?.title === "Navigation"
-          if (aIsNav && !bIsNav) return -1
-          if (!aIsNav && bIsNav) return 1
-
-          const aIsOverview = a.data?.title === "Overview"
-          const bIsOverview = b.data?.title === "Overview"
-          if (aIsOverview && !bIsOverview) return -1
-          if (!aIsOverview && bIsOverview) return 1
-
-          return a.displayName.localeCompare(b.displayName, undefined, {
-            numeric: true,
-            sensitivity: "base",
-          })
-        }
-
-        // both are folders: sort by predefined list
-        const folderOrder = [
-          "Reinforcement Learning",
-          "Imitation Learning",
-          "Active Imitation Learning",
-          "Preference Learning",
-          "Agentic RL",
-          "Partially Observable MDP",
-          "Bandit Theory",
-          "Multimodal Reasoning",
-          "Textual Reasoning",
-          "Computer Vision",
-        ]
-        const aIndex = folderOrder.indexOf(a.displayName)
-        const bIndex = folderOrder.indexOf(b.displayName)
-        // folders not in the list go to the end, alphabetically
-        if (aIndex === -1 && bIndex === -1) {
-          return a.displayName.localeCompare(b.displayName, undefined, {
-            numeric: true,
-            sensitivity: "base",
-          })
-        }
-        if (aIndex === -1) return 1
-        if (bIndex === -1) return -1
-        return aIndex - bIndex
-      },
+      sortFn: explorerSortFn,
       mapFn: (node) => {
         // if (node.displayName === "Navigation") {
         //   node.displayName = "🧭 Navigation"
