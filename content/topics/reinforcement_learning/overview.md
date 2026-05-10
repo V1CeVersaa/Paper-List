@@ -1,10 +1,12 @@
 ---
 title: "Overview"
-headline: "Overview of Reinforcement Learning"
+headline: "Overview of Classical and Deep Reinforcement Learning"
 visibility: "public"
 status: "complete"
-description: "Queue and reading progress for Reinforcement Learning."
+description: "Queue and reading progress for Classical & Deep RL."
 ---
+
+这个 overview 只整理 **传统 RL、Deep RL 及其理论和模型基础**。LLM post-training、RLHF/RLVR、agent tool-use training、preference optimization 不在这里展开；它们分别走 [Textual Reasoning](../textual_reasoning/index.md)、[Agentic RL](../agentic_rl/index.md)、[Preference Learning](../preference_learning/index.md) 或 [Safety & Alignment](../safety_alignment/index.md)。
 
 ## Tutorial & Overview
 

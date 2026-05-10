@@ -10,9 +10,9 @@ year: "2026"
 paper_url: "https://arxiv.org/abs/2502.03708"
 source_pdf: "raw/papers/universal-steering-monitoring.pdf"
 tags: ["activation_steering", "monitoring", "concept_vectors"]
-related: []
+related: ["Representation_Engineering", "ActAdd", "Sparse_Autoencoders", "AxBench"]
 created: "2026-04-15"
-updated: "2026-04-15"
+updated: "2026-05-09"
 draft: "false"
 ---
 
@@ -21,6 +21,8 @@ draft: "false"
 > 这篇论文试图把 **概念向量/concept vectors** 从零散技巧推进成一套通用接口。作者的核心判断是：很多安全相关或能力相关的语义概念，在大模型的多层激活里可以被压缩成 **低维线性结构/low-dimensional linear structure**。围绕这个判断，论文提出了一套统一方法：先在每一层上用 **递归特征机/Recursive Feature Machines/RFM** 学出面向目标概念的非线性预测器，再从预测器的 **平均梯度外积/Average Gradient Outer Product/AGOP** 中抽出最重要的线性方向，最后把这些跨层方向同时用于 **激活 steering** 和 **内部状态 monitoring**。论文最强的实验支撑不在单个 demo，而在三类系统证据：跨 512 个概念的自动化 steering 评测、六个 hallucination/toxicity benchmark 上监测优于 judge model、以及 Python→C++ 代码生成这类高精度任务上 steering 优于直接 prompting。
 >
 > 这篇论文也有很明确的边界。它最强的“universal”证据，其实主要是 **同一模型内部跨概念、跨语言、跨模态** 的通用性，而不是“一个模型学到的向量可以无损迁到另一个模型”。此外，512 概念的自动评测高度依赖 GPT-4o 生成概念、训练语料与 judge，因此大规模结果更适合支持“这条路线可扩展”，而不是支持“每个 concept vector 都已经被严格验证”。作者自己在讨论部分也很诚实地指出：**为什么分类得到的方向可以拿来 steering，以及为什么这么多复杂概念会呈现线性表示，本身仍然是开放问题。**
+>
+> 它是 `ActAdd` 和 `Representation_Engineering` 的规模化后续：ActAdd 给出最小 steering 操作，RepE 给出 top-down reading/control 框架，本文则用 RFM/AGOP 把概念方向估计做成自动化 pipeline。它也为后面的 `AxBench` 提供被检验对象：如果 concept vectors 真能成为通用 steering/monitoring 接口，就必须在更系统的 benchmark 上面对 prompt、finetuning、SAE 和 ReFT 等基线。
 
 ## 1. Introduction
 
@@ -110,6 +112,10 @@ $$
 
 > [!tip]
 > 这篇论文最值得记住的技术点，不是 “RFM 比 logistic 更强” 这么平面，而是它把 **非线性学习** 和 **线性控制** 放到了同一个管道里。概念可以是复杂的，但部署接口依然是简单的向量加法和投影分类。
+
+> [!note] Claim Structure
+>
+> 论文的主张链条是：许多安全和能力相关概念可以在多层激活中被表示为可提取的低维方向；RFM/AGOP 能比简单线性 probe 更稳定地从复杂概念标签中抽出这些方向，并同时用于 steering 与 monitoring。证据来自跨 512 概念的自动 steering 评测、Python→C++ 代码生成、跨语言/多模态 demos 以及六个 hallucination/toxicity benchmark 上 probe 对 judge 的优势。限制是 “universal” 主要指同一方法可扩展，而不是单个向量跨模型通用；训练数据和 judge 依赖 GPT-4o，classification direction 为什么可转成 steering direction 仍缺理论解释。
 
 ## 4. Experiments
 

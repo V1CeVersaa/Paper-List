@@ -10,7 +10,7 @@ updated: "2026-04-10"
 
 ## Reading Queue
 
-这个队列不是按年份堆 paper，而是按 **agent scaffold -> online RL -> system scaling 与 training pathology** 这条主线排的。这样读的好处很直接：你会先搞清楚 agent 究竟在优化什么交互对象，再去看环境反馈如何变成学习信号，最后再进入那些真正决定规模化成败的系统与稳定性问题。若你读到 reward design 或 RLVR 这层觉得背景不够，直接并行回看 [Textual Reasoning](../textual_reasoning/index.md)；如果你更关心监督失灵、faithfulness 或更广的 alignment failure，则回 [Safety & Alignment](../safety_alignment/index.md)。如果你卡在 PPO、GAE 或 hierarchical RL 的基础抽象，再回 [Reinforcement Learning](../reinforcement_learning/index.md) 补地基会更省力。
+这个队列不是按年份堆 paper，而是按 **agent scaffold -> online RL -> system scaling 与 training pathology** 这条主线排的。这样读的好处很直接：你会先搞清楚 agent 究竟在优化什么交互对象，再去看环境反馈如何变成学习信号，最后再进入那些真正决定规模化成败的系统与稳定性问题。若你读到 reward design 或 RLVR 这层觉得背景不够，直接并行回看 [Textual Reasoning](../textual_reasoning/index.md)；如果你更关心监督失灵、faithfulness 或更广的 alignment failure，则回 [Safety & Alignment](../safety_alignment/index.md)。如果你卡在 PPO、GAE、value function 或 hierarchical RL 的基础抽象，再回 [Classical & Deep RL](../reinforcement_learning/index.md) 补算法地基会更省力。
 
 <!-- AUTO:QUEUE:START -->
 - [x] arXiv: OpenClaw-RL, [arXiv](https://arxiv.org/abs/2603.10165), [Note](OpenClaw_RL.md)

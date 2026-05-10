@@ -27,6 +27,7 @@ AUTO_TOPICS_SECTION = "## Auto Topic Index"
 AUTO_QUEUE_START = "<!-- AUTO:QUEUE:START -->"
 AUTO_QUEUE_END = "<!-- AUTO:QUEUE:END -->"
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+ARXIV_ID_RE = re.compile(r"^(?:\d{4}\.\d{4,5}|[A-Za-z.\-]+/\d{7})(?:v\d+)?$")
 
 
 def today() -> str:
@@ -158,7 +159,61 @@ def build_overview_entry(
     return ", ".join(parts)
 
 
+def extract_arxiv_id(url: str, *, strip_version: bool = False) -> str:
+    if not url:
+        return ""
+
+    candidate = url.strip()
+    parsed = urlparse(candidate)
+    arxiv_id = ""
+
+    if parsed.scheme in {"http", "https"}:
+        if "arxiv.org" not in parsed.netloc.lower():
+            return ""
+        path = parsed.path.strip("/")
+        for prefix in ("abs/", "pdf/"):
+            if path.startswith(prefix):
+                arxiv_id = path[len(prefix) :]
+                if arxiv_id.endswith(".pdf"):
+                    arxiv_id = arxiv_id[:-4]
+                break
+    elif ARXIV_ID_RE.fullmatch(candidate):
+        arxiv_id = candidate
+    else:
+        return ""
+
+    arxiv_id = arxiv_id.strip("/")
+    if strip_version:
+        arxiv_id = re.sub(r"v\d+$", "", arxiv_id)
+    return arxiv_id
+
+
+def normalize_paper_url(url: str) -> str:
+    if not url:
+        return ""
+
+    arxiv_id = extract_arxiv_id(url, strip_version=False)
+    if arxiv_id:
+        return f"https://arxiv.org/abs/{arxiv_id}"
+
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return url
+
+    host = parsed.netloc.lower()
+    if "openreview.net" in host:
+        paper_id = parse_qs(parsed.query).get("id", [""])[0]
+        if paper_id:
+            return urlunparse(parsed._replace(path="/forum", query=f"id={paper_id}", fragment=""))
+
+    return urlunparse(parsed._replace(fragment=""))
+
+
 def normalize_pdf_source(source: str) -> str:
+    arxiv_id = extract_arxiv_id(source, strip_version=False)
+    if arxiv_id:
+        return f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+
     parsed = urlparse(source)
     if parsed.scheme not in {"http", "https"}:
         return source
@@ -181,6 +236,21 @@ def normalize_pdf_source(source: str) -> str:
     return source
 
 
+def is_supported_pdf_url(source: str) -> bool:
+    parsed = urlparse(source)
+    if parsed.scheme not in {"http", "https"}:
+        return False
+
+    host = parsed.netloc.lower()
+    path = parsed.path.lower()
+
+    if path.endswith(".pdf"):
+        return True
+    if "openreview.net" in host and path == "/pdf" and parse_qs(parsed.query).get("id", [""])[0]:
+        return True
+    return False
+
+
 def extract_canonical_key(url: str) -> str:
     """Return a normalized canonical identifier for deduplication.
 
@@ -191,22 +261,15 @@ def extract_canonical_key(url: str) -> str:
     """
     if not url:
         return ""
+    arxiv_id = extract_arxiv_id(url, strip_version=True)
+    if arxiv_id:
+        return f"arxiv:{arxiv_id}"
+
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"}:
         return url
 
     host = parsed.netloc.lower()
-    path = parsed.path
-
-    if "arxiv.org" in host:
-        for prefix in ("/abs/", "/pdf/"):
-            if path.startswith(prefix):
-                arxiv_id = path[len(prefix):]
-                if arxiv_id.endswith(".pdf"):
-                    arxiv_id = arxiv_id[:-4]
-                # Strip version suffix: 2401.00001v2 → 2401.00001
-                arxiv_id = re.sub(r"v\d+$", "", arxiv_id)
-                return f"arxiv:{arxiv_id}"
 
     if "openreview.net" in host:
         paper_id = parse_qs(parsed.query).get("id", [""])[0]
@@ -441,6 +504,11 @@ def _archive_filename(canonical_key: str, slug: str, suffix: str) -> str:
     return f"{slug}{suffix}"
 
 
+def derive_arxiv_pdf_url(paper_url: str) -> str:
+    arxiv_id = extract_arxiv_id(paper_url, strip_version=False)
+    return f"https://arxiv.org/pdf/{arxiv_id}.pdf" if arxiv_id else ""
+
+
 def archive_pdf(source: str, slug: str, paper_url: str = "", force: bool = False) -> str:
     """Archive a PDF into ``raw/papers/`` and return its repo-relative path.
 
@@ -452,10 +520,18 @@ def archive_pdf(source: str, slug: str, paper_url: str = "", force: bool = False
     papers that happen to share a slug cannot overwrite each other's archive.
     """
     RAW_PAPERS.mkdir(parents=True, exist_ok=True)
+    if not source:
+        source = derive_arxiv_pdf_url(paper_url)
+        if not source:
+            return ""
     source = normalize_pdf_source(source)
     canonical_key = extract_canonical_key(paper_url) if paper_url else ""
     parsed = urlparse(source)
     if parsed.scheme in {"http", "https"}:
+        if not is_supported_pdf_url(source):
+            raise ValueError(
+                f"refusing to archive non-PDF source as source_pdf: {source}"
+            )
         suffix = Path(parsed.path).suffix or ".pdf"
         target = RAW_PAPERS / _archive_filename(canonical_key, slug, suffix)
         if target.exists() and not force:
@@ -470,7 +546,11 @@ def archive_pdf(source: str, slug: str, paper_url: str = "", force: bool = False
         return target.relative_to(ROOT).as_posix()
 
     source_path = Path(source).expanduser().resolve()
-    suffix = source_path.suffix or ".pdf"
+    suffix = source_path.suffix
+    if suffix.lower() != ".pdf":
+        raise ValueError(
+            f"refusing to archive non-PDF local source as source_pdf: {source_path}"
+        )
     target = RAW_PAPERS / _archive_filename(canonical_key, slug, suffix)
     if target.exists() and not force:
         return target.relative_to(ROOT).as_posix()

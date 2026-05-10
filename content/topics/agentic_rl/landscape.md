@@ -14,7 +14,7 @@ updated: "2026-04-10"
 
 这也解释了为什么 **agentic RL** 和普通 RLHF 并不是一回事。InstructGPT 那套单轮偏好优化把“回答一次”看成一次 bandit 决策，核心难点是 reward model 与 KL 约束；而 agentic RL 面对的是 **长时程、部分可观测、混合动作空间**，困难会立刻变成 **信用分配/credit assignment、样本效率、探索/exploration、环境接口设计和训练稳定性**。更麻烦的是，LLM 并不是从随机策略起步。预训练已经给了它极强的语言先验，所以很多今天的重要问题，不是“如何从零学会”，而是 **如何把已有语言能力压进可执行的多步策略里**，以及 **哪些看上去像能力提升的现象，其实只是更会重排已有轨迹分布。**
 
-因此，这个 topic 的边界必须卡得很硬。它不会试图吞掉所有 reasoning、所有 RLHF、所有 tool-use 或所有 coding agent 工作。这里优先保留三类东西：第一类是 **把 agent 交互形式定义清楚** 的工作，例如 ReAct、LATS、SWE-agent；第二类是 **真正对 multi-turn RL 算法或训练动力学有推进** 的工作，例如 ArCHer、DigiRL、WebRL、RAGEN；第三类是 **让训练规模化成为可能的系统与基础设施**，例如 AgentGym-RL、AgentRL、ComputerRL。更基础的 policy gradient 理论放在别的 topic 看，会更干净。
+因此，这个 topic 的边界必须卡得很硬。它不会试图吞掉所有 reasoning、所有 RLHF、所有 tool-use 或所有 coding agent 工作。这里优先保留三类东西：第一类是 **把 agent 交互形式定义清楚** 的工作，例如 ReAct、LATS、SWE-agent；第二类是 **真正对 multi-turn RL 算法或训练动力学有推进** 的工作，例如 ArCHer、DigiRL、WebRL、RAGEN；第三类是 **让训练规模化成为可能的系统与基础设施**，例如 AgentGym-RL、AgentRL、ComputerRL。更基础的 policy gradient、value function 和 exploration 理论放在 [Classical & Deep RL](../reinforcement_learning/index.md) 看，会更干净。
 
 ## Methodology Spectrum
 
@@ -58,4 +58,4 @@ updated: "2026-04-10"
 
 第三轮再进入 **system scaling 与 training pathology**。`RAGEN`、`AgentGym-RL`、`AgentRL`、`ComputerRL` 和 `A Practitioner's Guide to Multi-turn Agentic Reinforcement Learning` 这一组最适合在你已经熟悉前两轮之后阅读，因为这时你会开始真正关心 rollout throughput、跨环境训练、任务混合、reward variance 和模式塌缩。它们读完以后，你对“为什么很多漂亮 demo 一旦规模化就会变形”会有非常具体的认识。
 
-如果你读到中途发现 reward design 与 RLVR 这层还是虚，那就不要在这个 topic 里硬扛，直接回到 [Textual Reasoning](../textual_reasoning/index.md) 补 `DeepSeek-R1`、`DAPO`、`Dr. GRPO` 和 `GRPO` 动力学那几篇；如果你更担心的是监督失灵、faithfulness 或 exploit 评判器，那就并行回看 [Safety & Alignment](../safety_alignment/index.md)。如果你卡在 PPO、GAE、hierarchical RL 这些基础抽象，就回 [Reinforcement Learning](../reinforcement_learning/index.md) 补地基。这样切分阅读路线会更高效，因为 **Agentic RL 最难的地方恰恰不在某个单点算法，而在多条技术线如何重新接到一起。**
+如果你读到中途发现 reward design 与 RLVR 这层还是虚，那就不要在这个 topic 里硬扛，直接回到 [Textual Reasoning](../textual_reasoning/index.md) 补 `DeepSeek-R1`、`DAPO`、`Dr. GRPO` 和 `GRPO` 动力学那几篇；如果你更担心的是监督失灵、faithfulness 或 exploit 评判器，那就并行回看 [Safety & Alignment](../safety_alignment/index.md)。如果你卡在 PPO、GAE、hierarchical RL 这些基础抽象，就回 [Classical & Deep RL](../reinforcement_learning/index.md) 补地基。这样切分阅读路线会更高效，因为 **Agentic RL 最难的地方恰恰不在某个单点算法，而在多条技术线如何重新接到一起。**

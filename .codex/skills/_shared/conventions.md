@@ -18,6 +18,7 @@ When archiving a paper from a URL, normalize to a direct PDF download before cal
 
 Rules:
 - Never guess PDF endpoints for publisher-specific sites (NeurIPS, ICML HTML proceedings, ACL Anthology, etc.). Store `paper_url` and leave `source_pdf` empty.
+- Only archive actual PDF sources into `raw/papers/`. Do not pass arXiv `e-print` URLs, TeX archives, HTML pages, or other source bundles to `--pdf`; `archive_pdf()` rejects unsupported non-PDF sources instead of recording them as `source_pdf`.
 - `paper_url` always stores the canonical **human-facing** link (the abstract page, not the PDF), regardless of whether the PDF was archived.
 - `source_pdf` stores the relative path under `raw/papers/` only when a local copy exists.
 - The `repo_ops.normalize_pdf_source()` function handles arXiv and OpenReview automatically; call it before `urlretrieve`.
@@ -74,6 +75,19 @@ Rules:
 Examples:
 - Good: `["policy_optimization", "trust_region"]`
 - Too broad/noisy: `["reinforcement_learning", "optimization", "policy", "trust_region", "theory"]`
+
+---
+
+## Related-Note Pass for Paper Notes
+
+Every normal `/read` topic note should be placed inside the existing reading graph, not written as an isolated summary. After the first full reading and before drafting the final prose:
+
+1. Inspect the target topic's `index.md` and `overview.md` to understand the local reading path.
+2. If nearby completed notes are not obvious, run `maintain/scripts/query_context.py` with the paper title plus 3-6 key concepts.
+3. Read one or two genuinely relevant completed notes. Prefer notes that are direct precursors, stronger follow-ups, mechanism papers, mitigation papers, benchmark critiques, or bridge papers.
+4. Write the relationship into frontmatter `related`, the third paragraph of the `Contributions` callout, and when useful `Related Work & Future Work`.
+
+The relationship must be concrete. Good wording explains whether the current paper prepares, generalizes, contrasts with, mechanizes, or supplies the empirical baseline for another note. Avoid generic claims such as "related to safety alignment." Existing notes can guide positioning and contrast, but current-paper claims must remain grounded in the current paper itself.
 
 ---
 
@@ -138,8 +152,11 @@ Event strings by skill:
 | `/synthesize` | `synthesize` |
 | `/maintain` | `maintain` |
 
+Event strings follow the work performed, not only the storage path. A single-paper finished note under `content/conferences/<venue-year>/<paper>.md` is still `/read` and uses `event=read`; `/synthesize` is reserved for cross-paper comparisons, conference-level observations, surveys, and landscape updates.
+
 Common detail keys:
 - `topic=<slug>`
+- `venue=<venue-year>`
 - `path=<relative path from repo root>`
 - `inbox=<inbox item path>` (for intake/read)
 - `source=<source_pdf path>` (for read/promote)

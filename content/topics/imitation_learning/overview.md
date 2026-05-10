@@ -6,6 +6,10 @@ status: "complete"
 description: "Queue and reading progress for Imitation Learning."
 ---
 
+## Topic Boundary
+
+这个 overview 记录 **非 LLM 语境下的 Imitation Learning**。主动查询、selective labeling、multiple oracle、preference-based active query 这类工作统一放在子目录 [Active Imitation Learning](./active_imitation_learning/overview.md)；它们仍然属于 IL，只是子问题更强调 query policy、expert feedback cost 和 on-policy interaction。LLM agent 的 RL/RLVR/RLHF 训练不从这里收。
+
 ## Tutorial
 
 - [ ] arXiv 2018: An Algorithmic Perspective on Imitation Learning, [arXiv](https://arxiv.org/abs/1811.06711)
@@ -34,3 +38,7 @@ description: "Queue and reading progress for Imitation Learning."
 **Explainable Imitation Learning**:
 
 - [ ] ICLR 2025 Spotlight: Student-Informed Teacher Training, [arXiv](https://arxiv.org/abs/2412.09149), [Note](./SITT.md)
+
+## Active Imitation Learning
+
+AIL 的完整子队列见 [Active Imitation Learning](./active_imitation_learning/overview.md)。这里保留它作为 IL 的子方向，而不是全局一级 topic，是为了明确 **AIL ⊂ IL**，并且把边界限制在传统控制、MDP、DRL 和 oracle-query 模仿学习问题上。

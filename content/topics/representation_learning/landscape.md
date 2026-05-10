@@ -54,7 +54,7 @@ Representation learning 真正要解决的问题，是 **怎样把高维、嘈�
 
 ### Entry
 
-第一轮最适合先读 *Auto-Encoding Variational Bayes*、[InfoGAN](../computer_vision/InfoGAN.md) 和 *A Simple Framework for Contrastive Learning of Visual Representations*。这一组能把三件最基础的事讲透：为什么大家要引入 latent variable、为什么“可解释因素”会成为一个独立目标、以及为什么现代 self-supervised learning 会把注意力转向 view consistency 和 embedding geometry。读完这三篇，你对 **重建式目标** 和 **对比式目标** 的差别就会有比较稳的感觉。
+第一轮最适合先读 *Auto-Encoding Variational Bayes*、[InfoGAN](../classical_cv/InfoGAN.md) 和 *A Simple Framework for Contrastive Learning of Visual Representations*。这一组能把三件最基础的事讲透：为什么大家要引入 latent variable、为什么“可解释因素”会成为一个独立目标、以及为什么现代 self-supervised learning 会把注意力转向 view consistency 和 embedding geometry。读完这三篇，你对 **重建式目标** 和 **对比式目标** 的差别就会有比较稳的感觉。
 
 ### Core
 

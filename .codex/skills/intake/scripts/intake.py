@@ -17,11 +17,15 @@ from repo_ops import (
     ensure_overview_entry,
     extract_canonical_key,
     find_by_canonical_key,
+    normalize_paper_url,
     overview_has_entry,
+    parse_frontmatter,
+    read_text,
     render_template,
     skill_asset,
     slugify,
     today,
+    update_frontmatter,
     write_text,
 )
 
@@ -37,7 +41,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--pdf",
         default="",
-        help="Local PDF path, direct PDF URL, arXiv abs URL, or OpenReview forum URL to archive locally.",
+        help=(
+            "Supported PDF source to archive locally: local .pdf path, direct .pdf URL, "
+            "arXiv abs/pdf URL, or OpenReview forum/pdf URL."
+        ),
     )
     parser.add_argument("--why", default="TODO")
     parser.add_argument("--positioning", default="TODO")
@@ -54,7 +61,7 @@ def main() -> int:
 
     slug = args.slug or slugify(args.title)
     inbox_path = INBOX / f"{slug}.md"
-    paper_url = args.paper_url or args.arxiv
+    paper_url = normalize_paper_url(args.paper_url or args.arxiv)
 
     if not args.force:
         # --- Tier 1: canonical key dedup (paper_url / arXiv ID / OpenReview ID) ---
@@ -81,6 +88,20 @@ def main() -> int:
 
         # Case B: inbox item exists → check if overview entry is also present
         if existing_inbox is not None:
+            existing_slug = existing_inbox.stem
+            existing_frontmatter, _ = parse_frontmatter(read_text(existing_inbox))
+            updates: dict[str, str] = {}
+            existing_source_pdf = existing_frontmatter.get("source_pdf", "")
+
+            if paper_url and not existing_frontmatter.get("paper_url"):
+                updates["paper_url"] = paper_url
+            if not existing_source_pdf:
+                existing_source_pdf = archive_pdf(args.pdf, existing_slug, paper_url=paper_url, force=args.force)
+                if existing_source_pdf:
+                    updates["source_pdf"] = existing_source_pdf
+            if updates:
+                update_frontmatter(existing_inbox, updates)
+
             if overview_has_entry(topic=args.topic, title=args.title, paper_url=paper_url):
                 # Full duplicate: both inbox and overview exist → skip entirely
                 print(
@@ -108,7 +129,7 @@ def main() -> int:
             return 0
 
     # --- No duplicate found (or --force): full intake ---
-    source_pdf = archive_pdf(args.pdf, slug, paper_url=paper_url, force=args.force) if args.pdf else ""
+    source_pdf = archive_pdf(args.pdf, slug, paper_url=paper_url, force=args.force)
     rendered = render_template(
         skill_asset("intake", "inbox-item.md"),
         {

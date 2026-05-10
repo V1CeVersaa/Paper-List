@@ -71,6 +71,8 @@ def check_tracking(issues: list[str]) -> None:
     for pathspec in ("content/local", "content/drafts", "inbox", "raw", "ops"):
         tracked = git_tracked(pathspec)
         for entry in tracked:
+            if Path(entry).name == ".gitkeep":
+                continue
             issues.append(f"git-tracked private path detected: {entry}")
 
 

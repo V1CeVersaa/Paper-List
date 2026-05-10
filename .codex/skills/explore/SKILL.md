@@ -21,7 +21,7 @@ description: Use when the user wants to bootstrap a new topic, expand an existin
 1. **New topic vs. expansion** — decide before doing anything:
    - **New topic**: no `content/topics/<slug>/` directory exists; or the new direction's papers have minimal overlap with all existing topics
    - **Expansion**: the topic directory already exists with `index.md`/`overview.md`; new papers clearly belong within the existing scope — only `landscape.md` and `overview.md` need updating, skip `create_topic.py`
-2. Confirm the canonical topic slug (use underscores, e.g., `active_imitation_learning`).
+2. Confirm the canonical topic slug (use underscores, e.g., `causal_representation_learning`).
 3. Decide whether the user wants topic ordering updated in the Quartz explorer (`quartz.layout.ts`).
 
 ## Workflow

@@ -1,6 +1,6 @@
 ---
 name: synthesize
-description: Use when the user wants output spanning multiple papers or topics — "比较一下这几篇"、"帮我写一个综述"、"这几篇的异同是什么"、"conference 笔记"、"更新这个 topic 的 landscape". Use even when the user does not say /synthesize.
+description: Use when the user wants output spanning multiple papers or topics — "比较一下这几篇"、"帮我写一个综述"、"这几篇的异同是什么"、"conference 趋势/观察笔记"、"更新这个 topic 的 landscape". Use even when the user does not say /synthesize.
 ---
 
 # `/synthesize`
@@ -9,7 +9,7 @@ description: Use when the user wants output spanning multiple papers or topics �
 
 - The user asks to compare multiple papers.
 - The user wants a topic summary, cross-topic connection, or survey-like page.
-- The user wants a conference note recording emerging directions or methods.
+- The user wants a conference-level note recording emerging directions, methods, oral-session observations, or cross-paper patterns.
 - The user wants to update an existing `landscape.md`.
 
 ## Inputs Expected
@@ -45,7 +45,7 @@ Questions raised by this comparison that remain unanswered
 - [[topic/paper-slug]] — ...
 ```
 
-### Sub-path B — Conference Note → `content/conferences/<venue-year>.md`
+### Sub-path B — Conference-Level Note → `content/conferences/<venue-year>.md` or `content/conferences/<venue-year>/index.md`
 
 For recording observations from a conference, workshop, or oral session.
 
@@ -63,6 +63,12 @@ For each notable paper: one paragraph (contribution + why it matters)
 Papers worth following up with — route these through `/intake` afterward
 ```
 
+### Boundary — Conference-Local Paper Notes Belong To `/read`
+
+If the user asks to read one paper from a conference list and write a finished paper note under `content/conferences/<venue-year>/<paper>.md`, route that work to `/read`, not `/synthesize`. The storage path is conference-local, but the workflow type is still a single-paper read. The resulting ops log entry should therefore use `event=read`.
+
+`/synthesize` may later consume those conference-local paper notes to produce a cross-paper comparison, conference trend summary, oral-session observation, or topic landscape update.
+
 ### Sub-path C — Landscape Update → existing `content/topics/<topic>/landscape.md`
 
 For expanding an existing topic's landscape page. Do **not** create a new file.
@@ -77,6 +83,7 @@ For expanding an existing topic's landscape page. Do **not** create a new file.
 
 - `content/syntheses/<name>.md`
 - `content/conferences/<venue-year>.md`
+- `content/conferences/<venue-year>/index.md` when it is being used as the venue-level observation page
 - `content/topics/*/landscape.md`
 - `ops/log.md`
 
@@ -91,6 +98,7 @@ For expanding an existing topic's landscape page. Do **not** create a new file.
 - The result is filed back into the repo (not left in chat)
 - Source notes are linked
 - The synthesis is reusable outside this chat session
+- Conference-level notes distinguish direct conference observations from later synthesis across source notes
 
 ## Hand-Offs
 

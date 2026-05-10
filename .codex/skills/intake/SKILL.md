@@ -29,11 +29,12 @@ description: Use whenever the user wants to add one or more papers to the readin
 4. **Normalize source URLs** before archiving (see `_shared/conventions.md#source-url-normalization`):
    - `arxiv.org/abs/<id>` → `arxiv.org/pdf/<id>.pdf`
    - `openreview.net/forum?id=<id>` → `openreview.net/pdf?id=<id>`
+   - Do not archive arXiv `e-print` URLs, TeX archives, HTML pages, or other source bundles as `source_pdf`.
 
 ## Workflow
 
 1. Create a structured inbox item from `assets/inbox-item.md` using `scripts/intake.py`.
-2. Archive the PDF into `raw/papers/<slug>.pdf` when a PDF source is provided (`--pdf` accepts local path, direct URL, arXiv abs URL, or OpenReview forum URL).
+2. Archive the PDF into `raw/papers/<base>.pdf` when a supported PDF source is provided. For arXiv papers, also derive the PDF from the canonical `paper_url` when `--pdf` was omitted.
 3. Reserve a `- [ ]` entry in the topic `overview.md`.
 4. Rebuild the generated topic index if needed.
 5. Append an ops log entry (`event=intake`).
@@ -49,7 +50,7 @@ description: Use whenever the user wants to add one or more papers to the readin
 ## Files It May Write
 
 - `inbox/<slug>.md`
-- `raw/papers/<slug>.pdf`
+- `raw/papers/<base>.pdf`
 - `content/topics/<topic>/overview.md`
 - `content/index.md` and `content/topics/index.md` (via `rebuild_index.py`)
 - `ops/log.md`
@@ -63,7 +64,7 @@ description: Use whenever the user wants to add one or more papers to the readin
 
 - Each paper has a structured inbox item
 - Each paper has an `overview.md` placeholder entry
-- Each PDF is archived if a local file or URL was provided
+- Each PDF is archived if a supported local file or URL was provided, or if the canonical arXiv paper URL can be normalized to a direct PDF
 
 ## Hand-Offs
 

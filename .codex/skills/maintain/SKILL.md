@@ -30,7 +30,7 @@ description: Use when the user asks to tidy, check, or sync the repo — "帮我
 | `missing required file: index.md` | Topic directory has no index | Generate from `../explore/assets/topic-index.md` template | Scope section must be filled |
 | `too many tags` | A page is carrying a noisy frontmatter tag list | Trim to the highest-signal `0-3` tags | Decide which tags are primary vs. expendable |
 | `topic used as primary tag` | The first tag repeats the note's own topic and wastes the primary display slot | Move a more specific tag to first position, or drop the redundant topic tag | Decide whether the topic tag still adds retrieval value |
-| `git-tracked private path detected` | Private file in git index | `git rm --cached <file>` | Confirm no sensitive content first |
+| `git-tracked private path detected` | Private file in git index | `git rm --cached <file>` | Confirm no sensitive content first; sentinel `.gitkeep` files are exempt |
 | `missing auto topic markers` | Index file lacks `<!-- AUTO:TOPICS:START/END -->` | Append markers + regenerate with `rebuild_index.py` | Check insertion point is appropriate |
 
 ## Script Trigger Guide
@@ -42,6 +42,7 @@ Run the right script for the right situation (full invocation examples in `_shar
 | `lint_repo.py` | After any batch workflow; before every publish |
 | `rebuild_index.py` | After creating/deleting a topic; after bulk `overview.md` changes |
 | `query_context.py` | At the start of `/discuss` or `/synthesize` to pre-load relevant notes |
+| `note_length.py` | Before completing polished paper notes, including conference-local notes |
 | `migrate_frontmatter.py` | **Only** after a frontmatter schema change requiring bulk backfill; not for daily maintenance |
 
 ## Files It May Write
@@ -56,3 +57,5 @@ Run the right script for the right situation (full invocation examples in `_shar
 - Generated indexes are up to date
 - Obvious structure errors are fixed or reported to the user
 - No private paths are accidentally git-tracked
+- Post-read placement changes are resolved in the relevant topic or conference index, or explicitly reported as ambiguous
+- Full paper notes pass the 3500 Han-character length gate or have an explicit paper-specific exception

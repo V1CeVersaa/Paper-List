@@ -1,6 +1,7 @@
 ---
 name: review
-description: Use when the user wants a quality check on existing notes without editing them — "这篇笔记好不好"、"帮我看看这组笔记质量怎么样"、"哪些笔记应该补充"、"audit my notes on topic X". This is a read-only skill: it produces a diagnostic report but never edits files. Use before deciding whether to run /refresh.
+description: >-
+  Use when the user wants a quality check on existing notes without editing them — "这篇笔记好不好"、"帮我看看这组笔记质量怎么样"、"哪些笔记应该补充"、"audit my notes on topic X". This is a read-only skill: it produces a diagnostic report but never edits files. Use before deciding whether to run /refresh.
 ---
 
 # `/review`
@@ -21,8 +22,9 @@ description: Use when the user wants a quality check on existing notes without e
 ## Workflow
 
 1. Identify the target scope: a single note, all notes in a topic, or a custom file list.
-2. For each note, check against the quality criteria from `AGENTS.md §3 §8 Pre-Completion Checklist`:
+2. For each note, check against the quality criteria from `AGENTS.md §3 §10 Pre-Completion Checklist`:
    - Has the note gone beyond direct translation?
+   - Does it explicitly answer the minimum reader questions: focused problem, motivating insight, proposed method, stated claims, supporting results, prior-work dependency / downstream influence, and concrete problems or limitations?
    - Does `Contributions` block exist and summarize both core contribution and boundary condition?
    - Does `Introduction` cover motivation, gap, insight, and origin?
    - Is `Problem Setup` formal and clear?

@@ -13,6 +13,20 @@ The purpose of these notes is twofold: (1) to allow a reader who has not read th
 
 The agent's job is not to produce a paragraph-by-paragraph translation, nor to write only a vague summary. It should produce a high-quality Chinese note based on the paper, one that is reusable, easy to review later, and convenient for long-term retrieval.
 
+### Minimum Reader Questions
+
+Every polished full-paper note must explicitly answer the reader questions below, even when the answers are distributed across the normal five-section structure rather than written as separate headings:
+
+- What exact problem does the paper focus on, and why is this problem worth isolating?
+- What observation, empirical pattern, theoretical tension, or modeling insight motivates the paper's approach?
+- What method does the paper propose, and what is the core mechanism that makes the method different from nearby work?
+- What claims or 论断 does the paper make? Distinguish the authors' stated claims from the agent's interpretation.
+- What evidence, theorem, experiment, ablation, or result supports those claims, and what does the result actually show?
+- What prior work or prerequisite line of work does the paper depend on, and what downstream influence, follow-up role, or repo-local reading-graph position does it create?
+- What are the paper's concrete problems: assumptions, missing ablations, weak baselines, scope restrictions, evaluation gaps, theoretical limits, or deployment caveats?
+
+These questions are a minimum coverage contract, not a replacement outline. A note may use the standard `Introduction` / `Problem Setup` / `Methods` / `Experiments` / `Related Work & Future Work` sections, but it is incomplete if any of these questions is only implied or omitted.
+
 ## 1. Inputs and Workflow
 
 For each task, follow this default workflow:
@@ -21,10 +35,11 @@ For each task, follow this default workflow:
 2. Read the paper in full at least once to build an overall picture of its argument before beginning to write. Do not start drafting the note while still in the middle of a first reading pass.
 3. When reading the paper, prioritize the full main thread: background, core assumptions, formal problem definition, method, experimental support, limitations, and future directions.
 4. If the target Markdown file already exists, understand its current content first. Unless the user explicitly asks to preserve a partial draft, the goal should be to reorganize it into a complete and stylistically consistent note rather than mechanically appending text.
-5. Write only from the paper itself and materials provided by the user. Do not introduce external papers, web information, or unverified background on your own. When the paper references standard concepts (e.g., KL divergence, MDP, policy gradient), the agent may provide brief inline clarifications, but must not introduce claims or results from external sources.
-6. If the paper has an appendix or supplementary material, treat it as a secondary source: check it for important proofs, ablations, or clarifications that strengthen the main text, but do not let appendix content dominate the note.
-7. For less important details in the paper, it is acceptable to omit them, mention them only briefly, or downgrade them using `>` quote formatting. Do not let secondary material bury the main line.
-8. The final output should be "faithful to the paper, but better than a translation": preserve the original meaning while adding the necessary logical connections, term explanations, and contextual clarification so that the note is clearer and easier to revisit than a direct translation.
+5. Run a related-note pass before drafting the final note. Inspect the target topic's `index.md` and `overview.md`, then use existing completed notes or `query_context.py` to identify one or two genuinely relevant prior notes. Use this pass to decide how the new paper should be positioned in the topic's reading path, not to import unsupported claims into the current paper's method or results.
+6. Write only from the paper itself and materials provided by the user. Repo-local completed notes may be used for positioning, contrast, and forward/backward links, but claims about the current paper must still be grounded in the current paper. Do not introduce external papers, web information, or unverified background on your own. When the paper references standard concepts (e.g., KL divergence, MDP, policy gradient), the agent may provide brief inline clarifications, but must not introduce claims or results from external sources.
+7. If the paper has an appendix or supplementary material, treat it as a secondary source: check it for important proofs, ablations, or clarifications that strengthen the main text, but do not let appendix content dominate the note.
+8. For less important details in the paper, it is acceptable to omit them, mention them only briefly, or downgrade them using `>` quote formatting. Do not let secondary material bury the main line.
+9. The final output should be "faithful to the paper, but better than a translation": preserve the original meaning while adding the necessary logical connections, term explanations, and contextual clarification so that the note is clearer and easier to revisit than a direct translation.
 
 ## 2. General Writing Principles
 
@@ -44,7 +59,7 @@ For each task, follow this default workflow:
 
 The priority order is as follows:
 
-- Must retain: the problem being solved, why it matters, the core insight, the problem setup, key assumptions, the main method, the training or inference mechanism, the most important experimental conclusions, and the main limitations.
+- Must retain: the problem being solved, why it matters, the core insight, the problem setup, key assumptions, the main method, the authors' main claims or 论断, the training or inference mechanism, the most important experimental/theoretical conclusions, the paper's prior-work dependency and downstream influence, and the main limitations.
 - Should retain: important formulas needed to support the main line, relationships between modules, the conclusions and meaning of key theorems, and the experiments or ablations that most directly validate the method.
 - May selectively retain: implementation details, hyperparameters, secondary experiments, and peripheral derivations from supplementary material.
 - May omit or downgrade with `>` quote formatting: repetitive statements, descriptions of minor baselines, long proof details that are not necessary for understanding the main idea, and engineering details with little effect on the final conclusions.
@@ -70,9 +85,11 @@ headline: <full paper title>
 
 > [!abstract] Contributions
 >
-> Paragraph 1: Summarize in a highly compressed but information-dense way what problem the paper solves, what core method it proposes, what the key technical move is, and what the results show.
+> Paragraph 1: Summarize in a highly compressed but information-dense way what problem the paper solves, what core insight or observation motivates it, what core method it proposes, what central claim it makes, what the key technical move is, and what the results show.
 >
 > Paragraph 2: Briefly state the method's boundary conditions, key assumptions, possible weaknesses, or the main caveat that should be kept in mind when reading the paper.
+>
+> Paragraph 3: Position the paper inside the repo's existing reading graph. Explain the relevant prior-work dependency or prerequisite line, what this paper enables for later work, and name one or two completed notes that it directly prepares, contrasts with, or mechanistically extends. Keep this paragraph concrete: describe the relationship, not just a generic "related to X" link.
 
 ## 1. Introduction
 
@@ -90,6 +107,7 @@ Notes:
 - `title` should use a short title, common abbreviation, or main paper identifier.
 - `headline` should use the full paper title.
 - The `Contributions` block must appear before `Introduction` and should use callout formatting.
+- For normal full-paper topic notes, the `Contributions` block should usually contain three paragraphs: contribution, boundary condition, and repo-positioning / downstream role. Short workshop or thin papers may compress the third paragraph into the second paragraph, but should still state the paper's position relative to existing notes when a relevant note exists.
 - The main body should in principle keep the five-part structure. The title of Section 3 may be adjusted to `Algorithm`, `Methods`, `Model`, and so on, depending on the paper, but its role should remain the same.
 - All Markdown headings (lines starting with `#`) must be written in English.
 
@@ -100,9 +118,10 @@ Notes:
 This is the most important compressed view of the entire note. It should satisfy the following:
 
 - Do not merely say "the paper proposes X"; also explain why it matters.
-- The summary must reflect the paper's central technical move, not just a broad and empty conclusion.
+- The summary must reflect the paper's central insight, central claim, and central technical move, not just a broad and empty conclusion.
 - When appropriate, also mention result-level support such as identifiability, empirical improvements, or expansion of the applicable setting.
 - The second paragraph should ideally include the single most important reservation: a strong assumption, scope limitation, modeling restriction, or lack of experimental coverage.
+- For topic notes, include a repo-positioning paragraph that names one or two specific completed notes and explains the relationship. Good relationship verbs are "prepares," "sharpens," "generalizes," "contrasts with," "turns X into a mechanistic question," or "supplies the empirical baseline for." Avoid vague phrasing like "this is related to safety alignment"; the reader should know why the old note should be read before or after this one.
 
 ### 5.2 Introduction
 
@@ -110,7 +129,7 @@ This section should present the paper's underlying narrative, not simply rewrite
 
 - What fundamental problem the paper is trying to solve
 - Where the real gap in existing methods lies
-- What the authors' most profound motivation and key insight are
+- What the authors' most important observation, motivation, and key insight are
 - Where the idea comes from and why the modeling choice is reasonable
 
 Writing requirements:
@@ -151,6 +170,7 @@ Specific requirements for this section:
 - If the paper uses a probabilistic model, latent variables, an energy function, an optimization target, regularization terms, and so on, make each role explicit.
 - If the paper has separate training and testing stages, distinguish them clearly.
 - If the paper contains a theorem, proposition, or guarantee, summarize its conclusion, conditions, and practical meaning. Unless the proof itself is central, it usually does not need to be reproduced in full.
+- If the paper makes strong non-theorem claims, state those claims explicitly before presenting the evidence, so the reader can see the difference between the proposed mechanism, the authors' 论断, and the support the paper actually provides.
 - If some part is merely an implementation aid, engineering trick, or otherwise not a bottleneck for understanding the core method, it may be weakened in presentation.
 
 Additional conventions for this section:
@@ -167,6 +187,7 @@ The experiments section should be concise, but it must not degrade into a list o
 - What core tasks, datasets, baselines, and metrics are used
 - What the most important results actually show
 - Which results genuinely support the method design, such as ablations, robustness analysis, generalization, efficiency, or validation of theoretical predictions
+- Which important claims remain under-supported, only indirectly supported, or dependent on assumptions not stress-tested by the experiments
 
 In addition, the agent must include grounded critical organization and point out possible weaknesses in the experiments, for example:
 
@@ -184,6 +205,7 @@ The first priority of this section is clarity of organization.
 
 - `Related Work` should explain which methods are closest to the paper and what the actual differences are.
 - `Future Work` should distinguish future directions explicitly mentioned by the authors from possible extensions naturally inferred by the agent from the paper's limitations.
+- The section should also preserve the repo-level relationship discovered in the related-note pass. If the Contributions block gave the compressed relationship, this section can expand it: explain what prior-work line the paper depends on, whether the current paper is a precursor, a stronger follow-up, a mechanism paper, a mitigation paper, a benchmark critique, or a bridge between two topic clusters, and what influence or downstream role it creates for later reading.
 - If the authors' future work suggestions are preserved in a near-original form, concise organization or `>` quote formatting is appropriate.
 
 If the paper does not have a dedicated related work or future work section, the agent should still synthesize one here, but must not fabricate content.
@@ -215,12 +237,36 @@ If the paper does not have a dedicated related work or future work section, the 
 - If the target file already contains relatively mature content, keep the existing style consistent when adding new material, and avoid duplicated paragraphs or repeated definitions.
 - Unless the user explicitly requests it, do not modify other files just because you are adding or polishing notes.
 
-## 8. Pre-Completion Checklist
+## 8. Placement Check
+
+After reading the paper and before marking the note complete, check whether the current target location still matches the paper's primary contribution. This check must be based on the actual read, not only on the title, venue list, or initial guess.
+
+For topic notes under `content/topics/<topic>/`, compare the paper against the destination topic's `index.md` scope and the nearest competing topics. If the target is clearly wrong, move the note or change the promotion target before running `sync_overview.py`. If the fit is genuinely ambiguous, do not silently file it; record the competing placements and ask the user to choose.
+
+For conference-local paper notes under `content/conferences/<venue-year>/`, check both levels: the paper may still belong to the conference-local directory while being listed under the wrong `###` subcategory, and it may also have a different recommended final topic for later归档. If the conference subcategory is clearly wrong, move the checklist item within `content/conferences/<venue-year>/index.md`. The note should include a short `Placement Check` section stating the recommended conference subcategory, the likely final topic, and any boundary ambiguity.
+
+## 9. Note Length Gate
+
+Before marking a polished paper note as complete, run:
+
+```bash
+python3 .codex/skills/maintain/scripts/note_length.py --threshold 3500 <note-path>
+```
+
+The default hard gate for full paper notes is **3500 Han characters** in the visible Markdown body. The target range is **4200-5200 Han characters** for normal full-paper notes. `note_length.py` excludes YAML frontmatter, fenced code blocks, and HTML comments by default, so the count reflects explanatory Chinese prose rather than metadata or hidden placeholders.
+
+If the note is below 3500 Han characters, do not finish. Expand the note by adding missing method detail, formal setup, experimental evidence, reviewer discussion, limitations, or grounded critique. A below-threshold note is acceptable only when the paper itself is unusually short or thin, such as a short workshop paper, benchmark card, position note, or narrow dataset announcement. In that exception case, explicitly state why further expansion would add padding rather than substance.
+
+For conference-local paper notes under `content/conferences/<venue-year>/`, apply the same gate when the page is functioning as a paper note rather than a one-paragraph conference highlight.
+
+## 10. Pre-Completion Checklist
 
 Before finishing, check at least the following:
 
 - Has the note gone beyond direct translation and become capable of independently explaining the paper's main line?
+- Does the note explicitly answer the minimum reader questions: focused problem, motivating insight, proposed method, stated claims, supporting results, prior-work dependency / downstream influence, and concrete problems or limitations?
 - Does `Contributions` truly summarize the paper's core contribution and boundary conditions?
+- Does `Contributions` include the paper's repo-level position and downstream role, with one or two specific completed notes named when relevant?
 - Does `Introduction` clearly explain the motivation, gap, insight, and origin of the idea?
 - Is `Problem Setup` sufficiently formal, clear, and not overly verbose?
 - Does `Algorithm / Methods / Model` present the backbone before the details, and are the formulas explained?
@@ -231,5 +277,8 @@ Before finishing, check at least the following:
 - Is notation used consistently throughout the note, with every symbol defined on first use?
 - Are key figures accounted for — either included as images or described with placeholders?
 - Do sections flow into one another with adequate transitions, rather than reading as disconnected blocks?
+- Has the post-read placement check confirmed that the note's topic or conference subcategory matches the paper's primary contribution?
+- Has the related-note pass been reflected in `related` frontmatter and, when relevant, in `Related Work & Future Work`?
+- Does `note_length.py --threshold 3500 <note-path>` pass, or is there a concrete paper-specific reason why the note should be below the threshold?
 
 If the answer to any of the above is no, continue revising rather than stopping.

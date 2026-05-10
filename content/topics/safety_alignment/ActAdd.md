@@ -10,9 +10,9 @@ year: "2023"
 paper_url: "https://arxiv.org/abs/2308.10248"
 source_pdf: "raw/papers/steering-language-models-with-activation-engineering.pdf"
 tags: ["activation_steering", "actadd", "linear_representations"]
-related: []
+related: ["Representation_Engineering", "Universal_Steering_Monitoring", "AxBench"]
 created: "2026-04-17"
-updated: "2026-04-17"
+updated: "2026-05-09"
 draft: "false"
 ---
 
@@ -21,6 +21,8 @@ draft: "false"
 > 这篇论文想解决的是 **冻结大语言模型后，能不能不用再训练，就在推理时直接改它当前的行为倾向**。作者把这条路线命名为 **激活工程/activation engineering**，并提出最核心的方法 **Activation Addition/ActAdd**：先选一对自然语言对照 prompt，例如“Love”与“Hate”或“我总在谈论婚礼”与“我不谈论婚礼”，再取它们在某一层 **残差流/residual stream** 上的激活差，把这个差向量按系数放大后加到用户 prompt 的前向传播里。这样做完全不需要标签、不需要反向传播，也不改模型权重。论文在 GPT-2-XL 上展示了对 **情感、话题、风格乃至局部事实倾向** 的控制，并给出三类定量证据：与目标话题更相关的文本上困惑度下降、最佳注入层可把话题 steering 成功率从约 **2% 提到 90%**、以及 ConceptNet 上的离题常识性能几乎不受影响；同时，额外计算开销随模型规模并不会恶化。
 >
 > 这篇论文的边界也非常鲜明。首先，它最硬的量化实验几乎都围绕 **GPT-2-XL + wedding vector** 展开，Llama-13B 与 GPT-J-6B 更多只是定性复现。其次，方法仍然依赖两个超参数：**注入层/layer** 和 **注入强度/injection coefficient**，论文只给了不完整的网格搜索。更关键的是，作者虽然把结果解释成对 **线性表征/linear representation** 的因果证据，但论文并没有真正解释清楚：为什么一对 prompt 的激活差会稳定对应到一个可以跨上下文复用的语义方向。
+>
+> 在当前 topic 里，ActAdd 是 activation steering 线的简洁起点：它先证明“加一个激活差方向可以改行为”。`Representation_Engineering` 把这个直觉扩展为 reading/control 的 top-down 程序，`Universal_Steering_Monitoring` 进一步用 RFM/AGOP 自动估计多层 concept directions；而 `AxBench` 则反过来检验这类表示 steering 是否真的能在 benchmark 上打赢 prompt 和 fine-tuning。
 
 ## 1. Introduction
 
@@ -78,6 +80,10 @@ ActAdd 的方法主线极其干净，几乎可以压缩成“三次前向传播�
 但这里也要保持克制。论文提供的是 **因果迹象**，不是完整理论。它确实说明“沿某个差向量去推，行为会变”，却还没有证明这个方向就是唯一、最小或最稳定的语义轴。更进一步，为什么一个比较型 prompt pair 的差分会比直接指定目标输出更有效，论文也没有真正解释。这些都被作者留给了后续工作。
 
 <!-- TODO: insert Figure 1 from paper: ActAdd pipeline from contrast pair to activation difference to steered generation -->
+
+> [!note] Claim Structure
+>
+> 这篇论文的主张链条很清楚：它先把问题限定为 **无需再训练的 inference-time control**，再用 contrast-pair activation difference 作为方法，声称自然语言属性在 residual stream 中至少部分呈现可加的线性方向。支撑证据来自 wedding vector 的 perplexity、token probability、生成成功率与 ConceptNet 副作用测试。需要克制的是，论文只证明若干属性可以被这种向量操作因果影响，并没有证明这些方向唯一、稳定、可自动发现，或者足以支撑安全敏感概念的可靠部署控制。
 
 ## 4. Experiments
 

@@ -6,6 +6,8 @@ status: "complete"
 description: "Queue and reading progress for Active Imitation Learning."
 ---
 
+本页是 [Imitation Learning](../overview.md) 下面的 **Active Imitation Learning** 子队列，不再作为全局一级 topic 使用。这里保留的共同问题是：在非 LLM 的 IL/DRL 设定中，学习者如何主动选择 expert、oracle 或 preference feedback，从而降低查询成本并改善策略。
+
 ## 1. Single Expert Active Imitation Learning
 
 - [ ] JMLR 2014: Active Imitation Learning: Formal and Practical Reductions to I.I.D. Learning, [JMLR](http://jmlr.org/papers/v15/judah14a.html)

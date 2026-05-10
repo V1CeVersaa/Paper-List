@@ -1,6 +1,7 @@
 ---
 name: search
-description: Use when the user wants to find existing content in the repo — "有没有关于 X 的笔记"、"我之前读过哪些 Y"、"把和 Z 相关的内容列出来"、"find notes on"、"search for". This is a read-only skill: it never writes files, never modifies overviews, never updates indexes. Use even when the user does not say /search.
+description: >-
+  Use when the user wants to find existing content in the repo — "有没有关于 X 的笔记"、"我之前读过哪些 Y"、"把和 Z 相关的内容列出来"、"find notes on"、"search for". This is a read-only skill: it never writes files, never modifies overviews, never updates indexes. Use even when the user does not say /search.
 ---
 
 # `/search`

@@ -42,7 +42,7 @@ export const defaultContentPageLayout: PageLayout = {
     }),
     Component.Explorer({
       folderDefaultState: "open",
-      defaultOpenDepth: 0,
+      defaultOpenDepth: 1,
       sortFn: explorerSortFn,
       mapFn: (node) => {
         return node

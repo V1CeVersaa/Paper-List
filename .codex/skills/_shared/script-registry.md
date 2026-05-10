@@ -6,7 +6,7 @@ Quick reference for all scripts in `.codex/skills/`. Each entry covers: what the
 
 ## `intake/scripts/intake.py`
 
-**What it does**: Creates a structured inbox item at `inbox/<slug>.md`, reserves a `- [ ]` entry in the topic `overview.md`, optionally archives the PDF, and appends an ops log entry.
+**What it does**: Creates a structured inbox item at `inbox/<slug>.md`, reserves a `- [ ]` entry in the topic `overview.md`, archives the PDF when a supported source is available, and appends an ops log entry.
 
 **When to run it**: During `/intake`, once per paper. The script is the canonical way to create inbox items — do not create them manually.
 
@@ -22,9 +22,12 @@ python3 .codex/skills/intake/scripts/intake.py "Proximal Policy Optimization Alg
 ```
 
 Optional flags:
-- `--pdf <path-or-url>`: Archive PDF locally (accepts local path, direct PDF URL, arXiv abs URL, or OpenReview forum URL)
+- `--pdf <path-or-url>`: Archive PDF locally (accepts local `.pdf` path, direct `.pdf` URL, arXiv abs/pdf URL, or OpenReview forum/pdf URL; rejects arXiv `e-print`, TeX archives, HTML pages, and other non-PDF sources)
 - `--slug <custom-slug>`: Override auto-generated slug
 - `--force`: Overwrite existing inbox item
+
+Notes:
+- For arXiv `paper_url`s, the script can derive the PDF download even when `--pdf` is omitted.
 
 ---
 
@@ -46,7 +49,7 @@ python3 .codex/skills/read/scripts/promote.py \
   --inbox inbox/proximal-policy-optimization-algorithms.md
 ```
 
-If note is already in final location (no move needed), omit the positional arg and `--target`; the script will only update frontmatter and sync overview.
+If the note is already in its final location, pass that final note path as the positional `source` and omit `--target`; the script will only update frontmatter and sync overview.
 
 ---
 
@@ -85,9 +88,9 @@ python3 .codex/skills/read/scripts/sync_overview.py \
 ```bash
 # title is a positional argument; --slug overrides the auto-generated slug
 python3 .codex/skills/explore/scripts/create_topic.py \
-  "Active Imitation Learning" \
-  --slug active_imitation_learning \
-  --description "Methods that combine IL with active expert querying."
+  "Causal Representation Learning" \
+  --slug causal_representation_learning \
+  --description "Methods for learning representations with causal structure."
 
 # Then rebuild indexes
 python3 .codex/skills/maintain/scripts/rebuild_index.py
@@ -134,11 +137,38 @@ Exit code 0 = clean. Exit code 1 = issues found (printed to stdout).
 
 ---
 
+## `maintain/scripts/note_length.py`
+
+**What it does**: Counts Han ideographs in Markdown note bodies. By default it excludes YAML frontmatter, fenced code blocks, and HTML comments so the count reflects visible Chinese explanatory prose rather than metadata, code, or placeholders.
+
+**When to run it**:
+- Before completing or promoting a full paper note
+- Before marking a conference-local paper note complete
+- During `/maintain` when auditing whether recently generated notes are substantive enough
+
+**Example**:
+```bash
+# Hard gate for a finished paper note
+python3 .codex/skills/maintain/scripts/note_length.py \
+  --threshold 3500 \
+  content/topics/safety_alignment/Narrow_Tasks_Broad_Misalignment.md
+
+# Compare against a baseline note
+python3 .codex/skills/maintain/scripts/note_length.py \
+  --baseline content/topics/safety_alignment/Narrow_Tasks_Broad_Misalignment.md \
+  --ratio 0.75 \
+  content/conferences/iclr_26/thinking_or_cheating.md
+```
+
+Exit code 0 = all counted notes meet the threshold, or no threshold was supplied. Exit code 1 = at least one note is below threshold. Exit code 2 = an input path is missing.
+
+---
+
 ## `maintain/scripts/query_context.py`
 
 **What it does**: Ranks all public content pages by relevance to a free-text query and prints a compact context pack (title, description, headings, snippet, score). Useful for loading relevant notes into context before `/discuss` or `/synthesize`.
 
-**When to run it**: At the start of `/discuss` or `/synthesize` to find related notes; or in response to `/search` requests.
+**When to run it**: At the start of `/discuss` or `/synthesize` to find related notes; during `/read` when the related-note pass needs help finding one or two completed notes to position the new paper; or in response to `/search` requests.
 
 **Example**:
 ```bash

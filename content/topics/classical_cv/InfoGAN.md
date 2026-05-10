@@ -32,5 +32,3 @@ description: "Paper note on InfoGAN: Interpretable Representation Learning by In
 ## 2. Related Work
 
 ## 3. Preliminaries
-
-

@@ -1,10 +1,10 @@
 ---
 title: Overview
-headline: Overview of Computer Vision
-description: Queue and reading progress for Computer Vision.
+headline: Overview of Classical CV
+description: Queue and reading progress for Classical CV.
 status: complete
 visibility: public
-topic: computer_vision
+topic: classical_cv
 updated: "2026-04-09"
 ---
 
